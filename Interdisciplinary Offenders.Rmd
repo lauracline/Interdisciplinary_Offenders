@@ -1,0 +1,430 @@
+---
+title: "Interdisciplinary Offenders"
+author: "Laura Cline"
+date: "08/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load and install packages
+library(tidyverse)
+library(janitor)
+library(forcats)
+```
+
+```{r}
+# Create mode function
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+```
+
+```{r}
+#Load data 
+csc_data <- read.csv("The_Globe_and_Mail_CSC_OMS.csv")
+```
+
+```{r}
+# Create dataset just for female inmates 
+female_ds <- csc_data %>%
+  filter(GENDER == "FEMALE")
+
+female_ds
+```
+# Clean Data 
+```{r}
+## Clean data ##
+
+# Put column names to lowercase
+female_ds <- female_ds %>%
+  clean_names()
+
+names(female_ds)
+```
+
+```{r}
+# Check for missing values 
+sum(is.na(female_ds))
+```
+
+```{r}
+# Check for missing values in the race column
+inmates_per_race <- female_ds %>%
+  count(race)
+
+inmates_per_race
+```
+```{r}
+inmates_per_race <- female_ds %>%
+  count(race_grouping)
+
+inmates_per_race
+```
+
+```{r}
+# Number per offender security level 
+inmates_per_race <- female_ds %>%
+  count(offender_security_level)
+
+inmates_per_race
+```
+
+```{r}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(dynamic_need)
+
+inmates_per_race
+```
+
+```{r}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(static_risk)
+
+inmates_per_race
+```
+
+```{r}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(reintegration_potential)
+
+inmates_per_race
+```
+
+```{r}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(motivation)
+
+inmates_per_race
+```
+
+```{r}
+# We see that we can rename some of these values 
+unique(female_ds$race)
+```
+
+```{r}
+# We can see that the North America, Metis, and Inuit Races are all part of the Indigenous racial grouping 
+
+female_ds_test <-
+  female_ds %>%
+  filter(race_grouping == "Indigenous") %>%
+  select(race, race_grouping)
+
+female_ds_test
+unique(female_ds_test$race)
+```
+
+```{r}
+female_ds_test2 <-
+  female_ds %>%
+  filter(race == "North American") %>%
+  select(race, race_grouping)
+
+female_ds_test2
+unique(female_ds_test2$race_grouping)
+```
+
+```{r}
+female_ds$race_categories <- female_ds$race
+```
+
+```{r}
+unique(female_ds$race_categories)
+```
+
+```{r}
+#Group Ethnicities into Racial Categories  based on Statistics Canada 
+
+female_ds$race_categories[female_ds$race_categories == ""] <- "Unable to Specify"
+female_ds$race_categories[female_ds$race_categories == "North American"] <- "Indigenous"
+female_ds$race_categories[female_ds$race_categories == "Metis"] <- "Indigenous"
+female_ds$race_categories[female_ds$race_categories == "East Indian"] <- "South Asian"
+female_ds$race_categories[female_ds$race_categories == "Unknown"] <- "Unable to Specify"
+female_ds$race_categories[female_ds$race_categories == "Korean"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Euro.-Southern"] <- "White"
+female_ds$race_categories[female_ds$race_categories == "Asian-South"] <- "South Asian"
+female_ds$race_categories[female_ds$race_categories == "Euro.-Western"] <- "White"
+female_ds$race_categories[female_ds$race_categories == "Asi-E/Southeast"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Asian-West"] <- "West Asian"
+female_ds$race_categories[female_ds$race_categories == "Arab/West Asian"] <- "West Asian"
+female_ds$race_categories[female_ds$race_categories == "Arab"] <- "West Asian"
+female_ds$race_categories[female_ds$race_categories == "Euro.-Eastern"] <- "White"
+female_ds$race_categories[female_ds$race_categories == "Sub-Sahara Afri"] <- "Black"
+female_ds$race_categories[female_ds$race_categories == "Unable Specify"] <- "Unable to Specify"
+female_ds$race_categories[female_ds$race_categories == "Filipino"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Caribbean"] <- "Black"
+female_ds$race_categories[female_ds$race_categories == "Multirac/Ethnic"] <- "Multiracial"
+female_ds$race_categories[female_ds$race_categories == "Chinese"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Inuit"] <- "Indigenous"
+female_ds$race_categories[female_ds$race_categories == "Asiatic"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "S. E. Asian"] <- "East Asian"
+```
+
+```{r}
+unique(female_ds$race_categories)
+```
+
+```{r}
+# Create racial categories dataframe for analysis
+female_ds$race_analysis <- female_ds$race_categories
+```
+
+```{r}
+female_ds$race_analysis[female_ds$race_analysis == "Latin American"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "Multiracial"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "Black"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "Unable to Specify"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "East Asian"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "West Asian"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "South Asian"] <- "Other"
+```
+
+```{r}
+unique(female_ds$race_analysis)
+```
+
+```{r}
+# Create new dataframe just for female indigenous inmates 
+indigenous_df <- female_ds %>%
+  filter(race_grouping == "Indigenous")
+```
+
+```{r}
+female_ds$values <- female_ds$race_analysis
+female_ds$values[female_ds$values == "Indigenous"] <- 1
+female_ds$values[female_ds$values == "White"] <- 1
+female_ds$values[female_ds$values == "Other"] <- 1
+```
+
+# Exploratory Analysis 
+
+```{r}
+# Table for Total Female Inmates
+
+number_of_inmates <- female_ds %>%
+  summarise(n = n(),
+            average_age = round(mean(age), digits=2),
+            average_aggregate_sentence_length = round(mean(aggregate_sentence_length) / 365, digits=2)) %>%
+  rename("Number of Inmates" = n,
+         "Average Age" = "average_age",
+         "Average Sentence Length (Years)" = "average_aggregate_sentence_length")
+
+number_of_inmates %>%
+  knitr::kable(caption = "Number of Female Inmates in Federal Prisons (2011-2018)") %>%
+  kableExtra::kable_styling() #Cleaner table
+```
+
+
+```{r}
+inmate_chars__race <- female_ds %>%
+  group_by(race_categories) %>% 
+  summarise(n = n(),
+            average_age = round(mean(age), digits=2),
+            average_aggregate_sentence_length = round(mean(aggregate_sentence_length) / 365, digits=2)) %>%
+  mutate(freq = (n / sum(n))*100) %>%
+  arrange(desc(n)) %>%
+  rename("Number of Inmates" = n,
+         "Ethnic Group" = "race_categories",
+         "Average Age" = "average_age",
+         "Average Sentence Length (Years)" = "average_aggregate_sentence_length",
+         "Percent of Female Inmates" = "freq")
+
+inmate_chars__race %>%
+  knitr::kable(caption = "Number of Female Inmates in Federal Prisons (2011-2018)") %>%
+  kableExtra::kable_styling() #Cleaner table
+```
+
+## Create graph to show proportions for ethnic groups 
+
+```{r}
+female_ds %>%
+  group_by(race_categories) %>%
+  summarise(count = n()) %>%
+  ggplot(mapping = aes(x = reorder(race_categories, (count)), y = count)) +
+  geom_bar(fill = "orangered2", stat = 'identity') +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+  title = "Indigenous Women Disproportionately Represented in Federal Prisons \n(2011-2018)",
+             subtitle = "Although Indigenous women make up less than 4% of the Canadian female \npopulation, they represent over 34% of female inmates",
+             caption = "(Data from Correctional Services Canada (2020))",
+             x = "Racial Group",
+             y = "Number of Inmates"
+  )
+```
+
+
+
+
+```{r}
+# Races for Indigenous Women 
+indigenous_distribution <- indigenous_df %>%
+  group_by(race) %>%
+  summarise(n = n(),
+            average_age = round(mean(age), digits=2),
+            average_aggregate_sentence_length = round(mean(aggregate_sentence_length) / 365, digits=2)) %>%
+  mutate(freq = (n / sum(n))*100) %>%
+  arrange(desc(n)) %>%
+  rename("Indigenous Ethnic Group" = "race",
+         "Number of Inmates" = n,
+         "Average Age" = "average_age",
+         "Average Sentence Length (Years)" = "average_aggregate_sentence_length",
+         "Percent of Indigenous Female Inmates" = "freq")
+
+indigenous_distribution %>%
+  knitr::kable(caption = "Number of Female Indigenous Inmates by Ethnicity (2011-2018)") %>%
+  kableExtra::kable_styling() #Cleaner table
+```
+
+## Create a graph to show proportion of indigenous women 
+
+```{r}
+indigenous_df %>%
+  group_by(race) %>%
+  summarise(count = n()) %>%
+  ggplot(mapping = aes(x = reorder(race, (count)), y = count)) +
+  geom_bar(fill = "orangered2", stat = 'identity') +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+  title = "North American (First Nations) Women Are the Largest Indigenous Group \nin Federal Prisons",
+             subtitle = "The graph presents First Nations women as one group, but Indigenous women are not a \nsingle population with one single voice. Instead, they are members of distinct nations \nwith different histories, cultures, knowledge, and social experiences.",
+             caption = "(Data from Correctional Services Canada (2020))",
+             x = "Indigenous Ethnic Group",
+             y = "Number of Inmates"
+  )
+```
+
+# Top 10 Crimes for White Women 
+```{r}
+white_crime_table <- female_ds %>%
+  group_by(offence_description, race_analysis) %>%
+  count()
+  
+
+white_crime_table %>%
+  knitr::kable(caption = "Number of Female Indigenous Inmates by Ethnicity (2011-2018)") %>%
+  kableExtra::kable_styling() #Cleaner table
+```
+
+# Offender Security Level 
+
+```{r}
+security_level_sorted <-
+  female_ds %>%
+  filter(offender_security_level != "") 
+
+security_level_sorted$offender_security_level <- factor(security_level_sorted$offender_security_level, levels = c("MINIMUM", "MEDIUM", "MAXIMUM"))
+  
+security_level_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = offender_security_level), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Offender Security Level") +
+  labs(
+    title = "Indigenous Women Overrepresented in Maximum Security (2011-2018)",
+    subtitle = "Indigenous women are more likely to have a maximum or medium security level compared \nto White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+```
+
+# Dynamic/Need
+
+```{r}
+dynamic_sorted <-
+  female_ds %>%
+  filter(dynamic_need != "") 
+
+dynamic_sorted$dynamic_need <- factor(dynamic_sorted$dynamic_need, levels = c("LOW", "MEDIUM", "HIGH"))
+
+dynamic_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = dynamic_need), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Dynamic/Need Score") +
+  labs(
+    title = "Indigenous Women Overclassified as High Dynamic Risk (2011-2018)",
+    subtitle = "Indigenous women are more likely to be classified as having a high dynamic risk compared \nto White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+```
+
+# Static/Risk 
+
+```{r}
+static_sorted <-
+  female_ds %>%
+  filter(static_risk != "") 
+
+static_sorted$static_risk <- factor(static_sorted$static_risk, levels = c("LOW", "MEDIUM", "HIGH"))
+
+static_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = static_risk), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Static/Risk Score") +
+  labs(
+    title = "Indigenous Women Overclassified as High Static Risk (2011-2018)",
+    subtitle = "Indigenous women are more likely to be classified as having a high static risk compared \nto White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+```
+
+# Motivation 
+```{r}
+motivation_sorted <-
+  female_ds %>%
+  filter(motivation != "") 
+
+motivation_sorted$motivation <- factor(motivation_sorted$motivation, levels = c("LOW", "MEDIUM", "HIGH"))
+
+motivation_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = motivation), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Motivation Score") +
+  labs(
+    title = "Indigenous Women Classified as Having a Low Criminal Motivation (2011-2018)",
+    subtitle = "Despite the high security level, dynamic risk, and static risk, Indigenous women are classified as \nhaving low criminal motivation compared to White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+```
+# Reintegration Potential 
+
+```{r}
+reintegration_sorted <-
+  female_ds %>%
+  filter(reintegration_potential != "") 
+
+reintegration_sorted$reintegration_potential<- factor(reintegration_sorted$reintegration_potential, levels = c("LOW", "MEDIUM", "HIGH"))
+
+reintegration_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = reintegration_potential), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Greens", name = "Reintegration Potential") +
+    labs(
+    title = "Indigenous Women Given the Most Low Reintegration Scores (2011-2018)",
+    subtitle = "White women and non-Indigenous minority groups are more likely to be given high reintegration \nscores compared to Indigenous women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  ) 
+```

@@ -10,10 +10,16 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+webshot::install_phantomjs()
+```
+
+```{r}
 # Load and install packages
 library(tidyverse)
 library(janitor)
 library(forcats)
+library(cowplot)
+library(kableExtra)
 ```
 
 ```{r}
@@ -218,9 +224,10 @@ number_of_inmates <- female_ds %>%
          "Average Age" = "average_age",
          "Average Sentence Length (Years)" = "average_aggregate_sentence_length")
 
-number_of_inmates %>%
+inmates_table <- number_of_inmates %>%
   knitr::kable(caption = "Number of Female Inmates in Federal Prisons (2011-2018)") %>%
-  kableExtra::kable_styling() #Cleaner table
+  kableExtra::kable_styling() #%>%
+  #save_kable("Tables/total_female_inmates.pdf")
 ```
 
 
@@ -240,13 +247,14 @@ inmate_chars__race <- female_ds %>%
 
 inmate_chars__race %>%
   knitr::kable(caption = "Number of Female Inmates in Federal Prisons (2011-2018)") %>%
-  kableExtra::kable_styling() #Cleaner table
+  kableExtra::kable_styling() #%>%
+  #save_kable("Tables/total_female_inmates_by_race.pdf")
 ```
 
 ## Create graph to show proportions for ethnic groups 
 
 ```{r}
-female_ds %>%
+race_plot <- female_ds %>%
   group_by(race_categories) %>%
   summarise(count = n()) %>%
   ggplot(mapping = aes(x = reorder(race_categories, (count)), y = count)) +
@@ -260,6 +268,10 @@ female_ds %>%
              x = "Racial Group",
              y = "Number of Inmates"
   )
+
+pp1 <- cowplot::plot_grid(race_plot, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/total_inmates_by_race.pdf", plot=pp1, base_width=7, base_height=12)
 ```
 
 
@@ -282,13 +294,14 @@ indigenous_distribution <- indigenous_df %>%
 
 indigenous_distribution %>%
   knitr::kable(caption = "Number of Female Indigenous Inmates by Ethnicity (2011-2018)") %>%
-  kableExtra::kable_styling() #Cleaner table
+  kableExtra::kable_styling() #%>%
+  #save_kable("Tables/total_female_indigenous_inmates_by_ethnic.pdf")
 ```
 
 ## Create a graph to show proportion of indigenous women 
 
 ```{r}
-indigenous_df %>%
+i_plot <- indigenous_df %>%
   group_by(race) %>%
   summarise(count = n()) %>%
   ggplot(mapping = aes(x = reorder(race, (count)), y = count)) +
@@ -302,6 +315,10 @@ indigenous_df %>%
              x = "Indigenous Ethnic Group",
              y = "Number of Inmates"
   )
+
+pp2 <- cowplot::plot_grid(i_plot, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/total_inmates_by_indigenous_ethnic.pdf", plot=pp2, base_width=7, base_height=12)
 ```
 
 # Top 10 Crimes for White Women 
@@ -325,7 +342,7 @@ security_level_sorted <-
 
 security_level_sorted$offender_security_level <- factor(security_level_sorted$offender_security_level, levels = c("MINIMUM", "MEDIUM", "MAXIMUM"))
   
-security_level_sorted %>%
+security <- security_level_sorted %>%
   ggplot() +
   geom_bar(mapping = aes(x = race_analysis, fill = offender_security_level), position = "fill") +
   theme_minimal() +
@@ -337,6 +354,10 @@ security_level_sorted %>%
              x = "Ethnic Group",
              y = "Proportion of Inmates"
   )
+
+pp3 <- cowplot::plot_grid(security, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/inmate_security_level_score.pdf", plot=pp3, base_width=7, base_height=12)
 ```
 
 # Dynamic/Need
@@ -348,7 +369,7 @@ dynamic_sorted <-
 
 dynamic_sorted$dynamic_need <- factor(dynamic_sorted$dynamic_need, levels = c("LOW", "MEDIUM", "HIGH"))
 
-dynamic_sorted %>%
+dynamic <- dynamic_sorted %>%
   ggplot() +
   geom_bar(mapping = aes(x = race_analysis, fill = dynamic_need), position = "fill") +
   theme_minimal() +
@@ -360,6 +381,10 @@ dynamic_sorted %>%
              x = "Ethnic Group",
              y = "Proportion of Inmates"
   )
+
+pp4 <- cowplot::plot_grid(dynamic, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/dynamic_need_score.pdf", plot=pp4, base_width=7, base_height=12)
 ```
 
 # Static/Risk 
@@ -371,7 +396,7 @@ static_sorted <-
 
 static_sorted$static_risk <- factor(static_sorted$static_risk, levels = c("LOW", "MEDIUM", "HIGH"))
 
-static_sorted %>%
+static <- static_sorted %>%
   ggplot() +
   geom_bar(mapping = aes(x = race_analysis, fill = static_risk), position = "fill") +
   theme_minimal() +
@@ -383,6 +408,10 @@ static_sorted %>%
              x = "Ethnic Group",
              y = "Proportion of Inmates"
   )
+
+pp5 <- cowplot::plot_grid(static, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/static_risk_score.pdf", plot=pp5, base_width=7, base_height=12)
 ```
 
 # Motivation 
@@ -393,7 +422,7 @@ motivation_sorted <-
 
 motivation_sorted$motivation <- factor(motivation_sorted$motivation, levels = c("LOW", "MEDIUM", "HIGH"))
 
-motivation_sorted %>%
+motivation <- motivation_sorted %>%
   ggplot() +
   geom_bar(mapping = aes(x = race_analysis, fill = motivation), position = "fill") +
   theme_minimal() +
@@ -405,6 +434,10 @@ motivation_sorted %>%
              x = "Ethnic Group",
              y = "Proportion of Inmates"
   )
+
+pp6 <- cowplot::plot_grid(motivation, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/motivation_score.pdf", plot=pp6, base_width=7, base_height=12)
 ```
 # Reintegration Potential 
 
@@ -415,7 +448,7 @@ reintegration_sorted <-
 
 reintegration_sorted$reintegration_potential<- factor(reintegration_sorted$reintegration_potential, levels = c("LOW", "MEDIUM", "HIGH"))
 
-reintegration_sorted %>%
+reintegration <- reintegration_sorted %>%
   ggplot() +
   geom_bar(mapping = aes(x = race_analysis, fill = reintegration_potential), position = "fill") +
   theme_minimal() +
@@ -427,4 +460,8 @@ reintegration_sorted %>%
              x = "Ethnic Group",
              y = "Proportion of Inmates"
   ) 
+
+pp7 <- cowplot::plot_grid(reintegration, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/reintegration_potential_score.pdf", plot=pp7, base_width=7, base_height=12)
 ```

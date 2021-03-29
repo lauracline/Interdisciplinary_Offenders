@@ -10,16 +10,22 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-webshot::install_phantomjs()
+# webshot::install_phantomjs()
+# install.packages("moonBook")
+# install.packages("ggiraph")
+# install.packages("plyr")
 ```
 
 ```{r}
 # Load and install packages
+library(plyr)
 library(tidyverse)
 library(janitor)
 library(forcats)
 library(cowplot)
 library(kableExtra)
+library(moonBook)
+library(ggiraph)
 ```
 
 ```{r}
@@ -204,12 +210,12 @@ indigenous_df <- female_ds %>%
   filter(race_grouping == "Indigenous")
 ```
 
+
 ```{r}
-female_ds$values <- female_ds$race_analysis
-female_ds$values[female_ds$values == "Indigenous"] <- 1
-female_ds$values[female_ds$values == "White"] <- 1
-female_ds$values[female_ds$values == "Other"] <- 1
+# Turn Offense Categories into Weights 
+female_ds$offence_weight <- female_ds$offence_description
 ```
+
 
 # Exploratory Analysis 
 
@@ -465,3 +471,60 @@ pp7 <- cowplot::plot_grid(reintegration, nrow=2, rel_heights = c(1,1.4), align="
 
 cowplot::save_plot("Figures/reintegration_potential_score.pdf", plot=pp7, base_width=7, base_height=12)
 ```
+
+# Logistic Regression Model 
+
+## Race and Inmate's Security Level 
+
+```{r}
+female_ds$offender_security_level %>% table()
+```
+
+```{r}
+inmate_experiment_one <-
+  female_ds %>%
+  filter(offender_security_level != "")
+```
+
+```{r}
+inmate_experiment_one <-
+  inmate_experiment_one %>%
+  mutate(is_high_offender_security_level = if_else(offender_security_level == "MAXIMUM", 1, 0))
+
+offender_security_level_model <-
+  glm(is_high_offender_security_level ~ race_analysis + age,
+      data = inmate_experiment_one,
+      family = 'binomial')
+
+summary(offender_security_level_model)
+```
+
+## Race and Inmate's Reintegration Score
+
+```{r}
+female_ds$reintegration_potential %>% table()
+```
+
+```{r}
+inmate_experiment_two <-
+  female_ds %>%
+  filter(reintegration_potential != "")
+```
+
+```{r}
+inmate_experiment_two <-
+  inmate_experiment_two %>%
+  mutate(is_high_reintegration_potential = if_else(reintegration_potential == "HIGH", 1, 0))
+
+reintegration_potential_model <-
+  glm(is_high_reintegration_potential ~ race_analysis + age + aggregate_sentence_length,
+      data = inmate_experiment_two,
+      family = 'binomial')
+
+summary(reintegration_potential_model)
+```
+
+
+
+
+## Reintegration Score and Reoffending 

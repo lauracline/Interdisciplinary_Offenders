@@ -1,0 +1,736 @@
+---
+title: "Overclassified and Overrepresented: The Incarceration of Indigeous Female Inmates in Canadian Federal Prisons (2012-2018)"
+author: "Laura Cline"
+date: "19/04/2021"
+abstract: "write abstract here"
+output:
+  bookdown::pdf_document2:
+toc: TRUE
+bibliography: references.bib 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction 
+
+```{r include=FALSE}
+# Load and install packages
+library(tidyverse)
+library(janitor)
+library(forcats)
+library(kableExtra)
+library(stargazer)
+```
+
+```{r include=FALSE}
+#Load data 
+csc_data <- read.csv("The_Globe_and_Mail_CSC_OMS.csv")
+```
+
+```{r include=FALSE}
+# Create dataset just for female inmates 
+female_ds <- csc_data %>%
+  filter(GENDER == "FEMALE")
+
+female_ds
+```
+
+```{r include=FALSE}
+## Clean data ##
+
+# Put column names to lowercase
+female_ds <- female_ds %>%
+  clean_names()
+
+names(female_ds)
+```
+
+```{r include=FALSE}
+# Check for missing values 
+sum(is.na(female_ds))
+```
+
+```{r include=FALSE}
+# Check for missing values in the race column
+inmates_per_race <- female_ds %>%
+  count(race)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+inmates_per_race <- female_ds %>%
+  count(race_grouping)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+# Number per offender security level 
+inmates_per_race <- female_ds %>%
+  count(offender_security_level)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(dynamic_need)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(static_risk)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(reintegration_potential)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+# Number per dynamic/need
+inmates_per_race <- female_ds %>%
+  count(motivation)
+
+inmates_per_race
+```
+
+```{r include=FALSE}
+# We see that we can rename some of these values 
+unique(female_ds$race)
+```
+
+```{r include=FALSE}
+# We can see that the North America, Metis, and Inuit Races are all part of the Indigenous racial grouping 
+
+female_ds_test <-
+  female_ds %>%
+  filter(race_grouping == "Indigenous") %>%
+  select(race, race_grouping)
+
+female_ds_test
+unique(female_ds_test$race)
+```
+
+```{r include=FALSE}
+female_ds_test2 <-
+  female_ds %>%
+  filter(race == "North American") %>%
+  select(race, race_grouping)
+
+female_ds_test2
+unique(female_ds_test2$race_grouping)
+```
+
+```{r include=FALSE}
+female_ds$race_categories <- female_ds$race
+```
+
+```{r include=FALSE}
+unique(female_ds$race_categories)
+```
+
+```{r include=FALSE}
+#Group Ethnicities into Racial Categories  based on Statistics Canada 
+
+female_ds$race_categories[female_ds$race_categories == ""] <- "Unable to Specify"
+female_ds$race_categories[female_ds$race_categories == "North American"] <- "Indigenous"
+female_ds$race_categories[female_ds$race_categories == "Metis"] <- "Indigenous"
+female_ds$race_categories[female_ds$race_categories == "East Indian"] <- "South Asian"
+female_ds$race_categories[female_ds$race_categories == "Unknown"] <- "Unable to Specify"
+female_ds$race_categories[female_ds$race_categories == "Korean"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Euro.-Southern"] <- "White"
+female_ds$race_categories[female_ds$race_categories == "Asian-South"] <- "South Asian"
+female_ds$race_categories[female_ds$race_categories == "Euro.-Western"] <- "White"
+female_ds$race_categories[female_ds$race_categories == "Asi-E/Southeast"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Asian-West"] <- "West Asian"
+female_ds$race_categories[female_ds$race_categories == "Arab/West Asian"] <- "West Asian"
+female_ds$race_categories[female_ds$race_categories == "Arab"] <- "West Asian"
+female_ds$race_categories[female_ds$race_categories == "Euro.-Eastern"] <- "White"
+female_ds$race_categories[female_ds$race_categories == "Sub-Sahara Afri"] <- "Black"
+female_ds$race_categories[female_ds$race_categories == "Unable Specify"] <- "Unable to Specify"
+female_ds$race_categories[female_ds$race_categories == "Filipino"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Caribbean"] <- "Black"
+female_ds$race_categories[female_ds$race_categories == "Multirac/Ethnic"] <- "Multiracial"
+female_ds$race_categories[female_ds$race_categories == "Chinese"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "Inuit"] <- "Indigenous"
+female_ds$race_categories[female_ds$race_categories == "Asiatic"] <- "East Asian"
+female_ds$race_categories[female_ds$race_categories == "S. E. Asian"] <- "East Asian"
+```
+
+```{r include=FALSE}
+unique(female_ds$race_categories)
+```
+
+```{r include=FALSE}
+# Create racial categories dataframe for analysis
+female_ds$race_analysis <- female_ds$race_categories
+```
+
+```{r include=FALSE}
+female_ds$race_analysis[female_ds$race_analysis == "Latin American"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "Multiracial"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "Black"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "Unable to Specify"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "East Asian"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "West Asian"] <- "Other"
+female_ds$race_analysis[female_ds$race_analysis == "South Asian"] <- "Other"
+```
+
+```{r include=FALSE}
+unique(female_ds$race_analysis)
+```
+
+```{r include=FALSE}
+# Create new dataframe just for female indigenous inmates 
+indigenous_df <- female_ds %>%
+  filter(race_grouping == "Indigenous")
+```
+
+# Data 
+
+##  Descriptive Analysis 
+
+```{r crocus, echo=FALSE}
+# Table for Total Female Inmates
+
+number_of_inmates <- female_ds %>%
+  summarise(n = n(),
+            average_age = round(mean(age), digits=2),
+            average_aggregate_sentence_length = round(mean(aggregate_sentence_length) / 365, digits=2)) %>%
+  rename("Number of Inmates" = n,
+         "Average Age" = "average_age",
+         "Average Sentence Length (Years)" = "average_aggregate_sentence_length")
+
+inmates_table <- number_of_inmates %>%
+  knitr::kable(caption = "Number of Female Inmates in Federal Prisons (2011-2018)") %>%
+  kableExtra::kable_styling() #%>%
+  #save_kable("Tables/total_female_inmates.pdf")
+
+inmates_table
+```
+
+
+```{r daffodil, echo=FALSE}
+inmate_chars_race <- female_ds %>%
+  group_by(race_categories) %>% 
+  summarise(n = n(),
+            average_age = round(mean(age), digits=2),
+            average_aggregate_sentence_length = round(mean(aggregate_sentence_length) / 365, digits=2)) %>%
+  mutate(freq = (n / sum(n))*100) %>%
+  arrange(desc(n)) %>%
+  rename("Number of Inmates" = n,
+         "Ethnic Group" = "race_categories",
+         "Average Age" = "average_age",
+         "Average Sentence Length (Years)" = "average_aggregate_sentence_length",
+         "Percent of Female Inmates" = "freq")
+
+race_table <- inmate_chars_race %>%
+  knitr::kable(caption = "Number of Female Inmates in Federal Prisons (2011-2018)") %>%
+  kableExtra::kable_styling(latex_options = "scale_down") #%>%
+  #save_kable("Tables/total_female_inmates_by_race.pdf")
+
+race_table
+```
+
+## Create graph to show proportions for ethnic groups 
+
+```{r tulip, echo=FALSE}
+race_plot <- female_ds %>%
+  group_by(race_categories) %>%
+  summarise(count = n()) %>%
+  ggplot(mapping = aes(x = reorder(race_categories, (count)), y = count)) +
+  geom_bar(fill = "orangered2", stat = 'identity') +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+  title = "Indigenous Women Disproportionately Represented in \nFederal Prisons (2012-2018)",
+             subtitle = "Although Indigenous women make up less than 4% of the Canadian female \npopulation, they represent over 34% of female inmates",
+             caption = "(Data from Correctional Services Canada (2020))",
+             x = "Racial Group",
+             y = "Number of Inmates"
+  )
+
+pp1 <- cowplot::plot_grid(race_plot, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/total_inmates_by_race.pdf", plot=pp1, base_width=7, base_height=12)
+
+race_plot
+```
+
+
+```{r hyacinth, echo=FALSE}
+# Races for Indigenous Women 
+indigenous_distribution <- indigenous_df %>%
+  group_by(race) %>%
+  summarise(n = n(),
+            average_age = round(mean(age), digits=2),
+            average_aggregate_sentence_length = round(mean(aggregate_sentence_length) / 365, digits=2)) %>%
+  mutate(freq = (n / sum(n))*100) %>%
+  arrange(desc(n)) %>%
+  rename("Indigenous Ethnic Group" = "race",
+         "Number of Inmates" = n,
+         "Average Age" = "average_age",
+         "Average Sentence Length (Years)" = "average_aggregate_sentence_length",
+         "Percent of Indigenous Female Inmates" = "freq")
+
+indigenous_distribution %>%
+  knitr::kable(caption = "Number of Female Indigenous Inmates by Ethnicity (2012-2018)") %>%
+  kableExtra::kable_styling(latex_options = "scale_down") #%>%
+  #save_kable("Tables/total_female_indigenous_inmates_by_ethnic.pdf")
+```
+
+## Create a graph to show proportion of indigenous women 
+
+```{r winter, echo=FALSE}
+i_plot <- indigenous_df %>%
+  group_by(race) %>%
+  summarise(count = n()) %>%
+  ggplot(mapping = aes(x = reorder(race, (count)), y = count)) +
+  geom_bar(fill = "orangered2", stat = 'identity') +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+  title = "North American (First Nations) Women Are the Largest \nIndigenous Group in Federal Prisons (2012-2018)",
+             subtitle = "The graph presents First Nations women as one group, but Indigenous women are not a \nsingle population with one single voice. Instead, they are members of distinct nations \nwith different histories, cultures, knowledge, and social experiences.",
+             caption = "(Data from Correctional Services Canada (2020))",
+             x = "Indigenous Ethnic Group",
+             y = "Number of Inmates"
+  )
+
+pp2 <- cowplot::plot_grid(i_plot, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/total_inmates_by_indigenous_ethnic.pdf", plot=pp2, base_width=7, base_height=12)
+
+i_plot
+```
+
+# Offender Security Level 
+
+```{r aconite, echo=FALSE}
+security_level_sorted <-
+  female_ds %>%
+  filter(offender_security_level != "") 
+
+security_level_sorted$offender_security_level <- factor(security_level_sorted$offender_security_level, levels = c("MINIMUM", "MEDIUM", "MAXIMUM"))
+  
+security <- security_level_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = offender_security_level), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Offender Security Level") +
+  labs(
+    title = "Indigenous Women Overrepresented in Maximum Security (2012-2018)",
+    subtitle = "Indigenous women are more likely to have a maximum or medium security level \ncompared to White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+
+pp3 <- cowplot::plot_grid(security, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/inmate_security_level_score.pdf", plot=pp3, base_width=7, base_height=12)
+
+security
+```
+
+# Dynamic/Need
+
+```{r snakeshead, echo=FALSE}
+dynamic_sorted <-
+  female_ds %>%
+  filter(dynamic_need != "") 
+
+dynamic_sorted$dynamic_need <- factor(dynamic_sorted$dynamic_need, levels = c("LOW", "MEDIUM", "HIGH"))
+
+dynamic <- dynamic_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = dynamic_need), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Dynamic/Need Score") +
+  labs(
+    title = "Indigenous Women Overclassified as High Dynamic Risk (2012-2018)",
+    subtitle = "Indigenous women are more likely to be classified as having a high dynamic risk \ncompared to White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+
+pp4 <- cowplot::plot_grid(dynamic, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/dynamic_need_score.pdf", plot=pp4, base_width=7, base_height=12)
+
+dynamic
+```
+
+# Static/Risk 
+
+```{r lily, echo=FALSE}
+static_sorted <-
+  female_ds %>%
+  filter(static_risk != "") 
+
+static_sorted$static_risk <- factor(static_sorted$static_risk, levels = c("LOW", "MEDIUM", "HIGH"))
+
+static <- static_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = static_risk), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Static/Risk Score") +
+  labs(
+    title = "Indigenous Women Overclassified as High Static Risk (2012-2018)",
+    subtitle = "Indigenous women are more likely to be classified as having a high static risk compared \nto White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+
+pp5 <- cowplot::plot_grid(static, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/static_risk_score.pdf", plot=pp5, base_width=7, base_height=12)
+
+static
+```
+
+# Motivation 
+```{r bluebell, echo=FALSE}
+motivation_sorted <-
+  female_ds %>%
+  filter(motivation != "") 
+
+motivation_sorted$motivation <- factor(motivation_sorted$motivation, levels = c("HIGH", "MEDIUM", "LOW"))
+
+motivation <- motivation_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = motivation), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Reds", name = "Motivation Score") +
+  labs(
+    title = "Indigenous Women Classified as Having a Low Criminal Motivation (2012-2018)",
+    subtitle = "On top of their high security level, dynamic risk, and static risk, Indigenous women are \nclassified as having low motivation to change and reform compared to White women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  )
+
+pp6 <- cowplot::plot_grid(motivation, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/motivation_score.pdf", plot=pp6, base_width=7, base_height=12)
+
+motivation
+```
+
+# Reintegration Potential 
+
+```{r bulb, echo=FALSE}
+reintegration_sorted <-
+  female_ds %>%
+  filter(reintegration_potential != "") 
+
+reintegration_sorted$reintegration_potential<- factor(reintegration_sorted$reintegration_potential, levels = c("LOW", "MEDIUM", "HIGH"))
+
+reintegration <- reintegration_sorted %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = race_analysis, fill = reintegration_potential), position = "fill") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Greens", name = "Reintegration Potential") +
+    labs(
+    title = "Indigenous Women Given the Most Low Reintegration Scores (2012-2018)",
+    subtitle = "White women and non-Indigenous minority groups are more likely to be given high \nreintegration scores compared to Indigenous women.",
+    caption = "(Data from Correctional Services Canada (2020))",
+             x = "Ethnic Group",
+             y = "Proportion of Inmates"
+  ) 
+
+pp7 <- cowplot::plot_grid(reintegration, nrow=2, rel_heights = c(1,1.4), align="v")
+
+cowplot::save_plot("Figures/reintegration_potential_score.pdf", plot=pp7, base_width=7, base_height=12)
+
+reintegration
+```
+
+# Results 
+
+## Logistic Regression Model for Race and Inmate's Security Level 
+
+The offender security level, which can be set to minimum, medium, and maximum, is used to assign inmates to institutions and treatment programs. An inmate who receives a maximum-security classification will typically be assigned to a maximum security prison, area or facility. 
+
+To test the effect of race on an inmate's security level. the first logistic regression model examines the likelihood that female inmates would end up with the worst possible security level- maximum - against the odds they would receive a medium or minimum one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (maximum security level: yes or no).
+
+The formula for logistic regression is:
+
+$p(X) = \frac{e^{\beta_{0}+\beta_{1}X}}{1+e^{\beta_{0}+\beta_{1}X}}$
+
+Where $p$ is the probability of $X$ (the mean of the dependent variable), $e$ is the base of the natural logarithm (about 2.718), and $\beta_{0}$ and $\beta_{1}$ are the parameters of the model (y-intercept and slope respectively).
+
+Our null and alternative hypothesis are:
+
+**H0**: There is no relationship between race and receiving a maximum security level in a Canadian federal prison. 
+
+**H1**: There is a relationship between race and receiving a maximum security level in a Canadian federal prison. 
+
+For this project, the models will need to have a 0.05 significance level to be considered statistically significant. This is a common standard for logistic regression models. Arriving at a finding with a 5 percent significance threshold is like flipping a coin 100 times and getting heads (or tails) at least 60 times. 
+
+The inmate security level is very important because it is a factor in the reintegration potential score. 
+
+```{r include=FALSE}
+female_ds$offender_security_level %>% table()
+```
+
+```{r include=FALSE}
+inmate_experiment_one <-
+  female_ds %>%
+  filter(offender_security_level != "")
+```
+
+```{r include=FALSE}
+inmate_experiment_one <-
+  inmate_experiment_one %>%
+  mutate(is_high_offender_security_level = if_else(offender_security_level == "MAXIMUM", 1, 0))
+```
+
+```{r security, echo=FALSE, results='asis'}
+offender_security_level_model <-
+  glm(is_high_offender_security_level ~ race_analysis + age,
+      data = inmate_experiment_one,
+      family = 'binomial')
+
+stargazer::stargazer(offender_security_level_model, header=TRUE, type = "latex",
+                     title = "Logistic Regression Model Predicting a Maximum Security Level for Female Inmates",
+                     out="tables/offender_security_model.pdf")
+```
+
+The security level model arrived at statistically significant results for all three racial categories. 
+
+The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a maximum security level, the log odds that a White women and other racialized minority will receive a maximum security level decrease by 1.068 and 0.646 respectively. The p-value for Indigenous women in maximum security is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a maximum security level. 
+
+## Dynamic/Need Score Model
+
+The dynamic/need score is assigned to inmates based on their results from the CSS's *Dynamic Factor Identification and Analysis Revised Assessment Report*. The Dynamic score predicts whether an individual will commit a crime based on their family, educational, and professional background, including:
+
+https://www.csc-scc.gc.ca/acts-and-regulations/705-6-cd-en.shtml#7
+
+1. Academic History: More years of education and educational achievement leads to lower score
+2. Work History: More years of employment, not being unemployed at time of arrest, and stable job history leads to lower score
+3. Work Skill Set: marketable and in-demand skills leads to lower score
+4. Work Attitudes offender's belief they can reintegrate into the workforce and strong work ethic leads to lower score
+5. Childhood: strong attachment to family unit, no history of being abused during childhood, and no criminally active family members leads to lower score. 
+6. Intimate Relationships: being in a long-term relationship and no history of being a victim/perpetrator of domestic abuse leads to lower score. 
+7. Parenting: strong parental skills and no history of child abuse leads to lower score. 
+8. Criminal: no relationships with other criminals leads to lower score. 
+9. Prosocial Support: ability to receive financial support from a partner, family, or friend leads to lower score. 
+10. Substance Abuse and Drug Use: no history of substance abuse or drug use leads to lower score. 
+11. Community Functioning: rarely changing residences during the last year, financial stability, constructive hobbies, and strong attachment to the community leads to lower score. 
+12. Personal/Emotional: openness to new experiences, strong problem-solving, strong critical thinking, low anxiety, high self-regulation, planning for the future, strong interpersonal skills, and low aggression leads to a lower score. 
+13. Attitudes: displaying negative attitudes towards crime, destruction of property, and violence leads to lower score. 
+14. Responsitivity: English fluency (verbal and written), high concentration, extroversion, no mental health issues, and no disabilities leads to a lower score. 
+
+The dynamic risk score is very important because it is a factor in the reintegration potential score. 
+
+To test the effect of race on an inmate's dynamic risk score. The second logistic regression model examines the likelihood that female inmates would end up with the worst possible dynamic risk score- high - against the odds they would receive a medium or low one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (high dynamic score: yes or no).
+
+Our null and alternative hypothesis are:
+
+**H0**: There is no relationship between race and receiving a high dynamic score in a Canadian federal prison. 
+
+**H1**: There is a relationship between race and receiving a high dynamic score in a Canadian federal prison. 
+
+```{r include=FALSE}
+female_ds$dynamic_need%>% table()
+```
+
+```{r include=FALSE}
+inmate_experiment_three <-
+  female_ds %>%
+  filter(dynamic_need != "")
+```
+
+```{r include=FALSE}
+inmate_experiment_three <-
+  inmate_experiment_three %>%
+  mutate(is_high_dynamic = if_else(dynamic_need == "HIGH", 1, 0))
+```
+
+```{r dynamic, echo=FALSE, results='asis'}
+offender_dynamic_model <-
+  glm(is_high_dynamic ~ race_analysis + age,
+      data = inmate_experiment_three,
+      family = 'binomial')
+
+stargazer::stargazer(offender_dynamic_model, header=TRUE, type = "latex",
+                     title = "Logistic Regression Model Predicting a High Dynamic Score for Female Inmates",
+                     out="tables/offender_dynamic_model.pdf")
+```
+
+
+The dynamic risk model arrived at statistically significant results for all three racial categories. 
+
+The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high dynamic score, the log odds that a White women and other racialized minority will receive a high dynamic score decrease by 0.493 and 1.189 respectively. The p-value for Indigenous women with a high dynamic risk is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high dynamic risk score.
+
+## Static Risk Model 
+
+The static risk score is assigned to inmates after completing the CSS's *Static Factor Assessment*. It is based on the inmate's personal history in the criminal justice system. The result of the score is a factor in an inmate's potential reintegration score. An inmate can receive a high, medium, or low rating. 
+
+The guidelines for determining the overall rating for static factor are:
+
+1. A rating of HIGH reflects a case in which: the Criminal 
+History Record reflects a considerable involvement in the criminal justice system, the Offense Severity Record reflects considerable harm on society and their victims, and the Sex Offence History Checklist demonstrates a considerable history in sex offending. 
+
+2. A rating of LOW reflects a case in which: the Criminal History Record reflects a low involvement in the criminal justice system, the Offence Severity Record shows little or no harm on society and their victims, and the Sex Offence History reflects little or no sex offending. 
+
+3. A rating of MEDIUM signifies that the offender is no a low criminal risk, but not a high criminal risk either. 
+
+To test the effect of race on an inmate's static risk score. The second logistic regression model examines the likelihood that female inmates would end up with the worst possible static risk score- high - against the odds they would receive a medium or low one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (high static score: yes or no).
+
+Our null and alternative hypothesis are:
+
+**H0**: There is no relationship between race and receiving a high static score in a Canadian federal prison. 
+
+**H1**: There is a relationship between race and receiving a high static score in a Canadian federal prison. 
+
+```{r include=FALSE}
+female_ds$static_risk%>% table()
+```
+
+```{r include=FALSE}
+inmate_experiment_four <-
+  female_ds %>%
+  filter(static_risk != "")
+```
+
+```{r include=FALSE}
+inmate_experiment_four <-
+  inmate_experiment_four %>%
+  mutate(is_high_static = if_else(static_risk == "LOW", 1, 0))
+```
+
+```{r static, echo=FALSE, results='asis'}
+offender_static_model <-
+  glm(is_high_static ~ race_analysis + age,
+      data = inmate_experiment_four,
+      family = 'binomial')
+
+stargazer::stargazer(offender_static_model, header=TRUE, type = "latex",
+                     title = "Logistic Regression Model Predicting a High Static Score for Female Inmates",
+                     out="tables/offender_static_model.pdf")
+```
+
+The static risk model arrived at statistically significant results for all three racial categories. 
+
+The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high static score, the log odds that a White women and other racialized minority will receive a high dynamic score decrease by 0.965 and 1.187 respectively. The p-value for Indigenous women with a high dynamic risk is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high static risk score.
+
+# Motivation Model 
+
+The motivation score determines if an inmate has a criminal motivation to recommit their crime(s) after they are released. The test is performed by a psychologist and the offender must prove to the psychologist that they have no desire to recommit their crimes. The psychologist asks the inmates questions in eight categories: education, employment, marital/family, associates, substance abuse, community functioning, personal/emotional orientation, and attitudes. 
+
+There are three possible scores: 
+
+1. HIGH: The offender fully recognizes a need requiring intervention and is fully ready to start intervention. They are committed to change and are already engaging in behavior related to change. They are motivated by internal reasoning (e.g., religion, improving themselves, being a better mother, etc.). 
+
+2. MEDIUM: The offender may not fully know or accept their deficit, but participate in the recommended programs or other interventions. They are not geniuinly committed to change and are motivated by external benefits (i.e., securing a shorter sentence, more privilges and freedoms, etc.). 
+
+3. LOW: The offender has no motivation to change their behaviour or genuine commitment to change. 
+
+To test the effect of race on an inmate's motivation score. The second logistic regression model examines the likelihood that female inmates would end up with the worst possible motivation score - low - against the odds they would receive a medium or high one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (low static score: yes or no).
+
+Our null and alternative hypothesis are:
+
+**H0**: There is no relationship between race and receiving a low motivation score in a Canadian federal prison. 
+
+**H1**: There is a relationship between race and receiving a low motivation score in a Canadian federal prison. 
+
+```{r include=FALSE}
+female_ds$motivation%>% table()
+```
+
+```{r include=FALSE}
+inmate_experiment_five <-
+  female_ds %>%
+  filter(motivation != "")
+```
+
+```{r include=FALSE}
+inmate_experiment_five <-
+  inmate_experiment_five %>%
+  mutate(is_low_motivation = if_else(motivation == "LOW", 1, 0))
+```
+
+```{r motivation, echo=FALSE, results='asis'}
+offender_motivation_model <-
+  glm(is_low_motivation ~ race_analysis + age,
+      data = inmate_experiment_five,
+      family = 'binomial')
+
+stargazer::stargazer(offender_motivation_model, header=TRUE, type = "latex",
+                     title = "Logistic Regression Model Predicting a High Motivation Score for Female Inmates",
+                     out="tables/offender_motivation_model.pdf")
+```
+
+The motivation model arrived at statistically significant results for all three racial categories. 
+
+The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a low motivation score, the log odds that a White women and other racialized minority will receive a low motivation score decrease by 0.792 and 0.794 respectively. The p-value for Indigenous women with a low motivation is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a low motivation score.
+
+## Race and Inmate's Reintegration Potential Score
+
+The final score an inmate receives is the Reintegration Potential Score. The reintegration potential score is determined by an inmate's security level, dynamic risk score, static risk score, and motivation score. Reintegration scores are extremely important for inmates because they determine if an inmate receives more privileges and freedoms within the prison, and a high reintegration potential increases their likelihood of receiving parole. 
+
+The Reintegration Potential includes three scores:
+
+1. LOW: an inmate received the worst score in two or more of the four tools. 
+2. MEDIUM: an inmate received the worst score in any one tool and one moderate score in at least one tool. 
+3. HIGH: an inmate who did not receive the worst score in any four of the tools and received at least three best scores in three or more of the four tools. 
+
+To test the effect of race on an inmate's reintegration potential score. The second logistic regression model examines the likelihood that female inmates would end up with the best possible reintegration potential score - high - against the odds they would receive a medium or low one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age and aggregate sentence length because the score is recalculated throughout the inmate's sentence. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (high reintegration potential score: yes or no).
+
+Our null and alternative hypothesis are:
+
+**H0**: There is no relationship between race and receiving a high reintegration potential score in a Canadian federal prison. 
+
+**H1**: There is a relationship between race and receiving a high reintegration potential score in a Canadian federal prison. 
+
+```{r include=FALSE}
+female_ds$reintegration_potential %>% table()
+```
+
+```{r include=FALSE}
+inmate_experiment_two <-
+  female_ds %>%
+  filter(reintegration_potential != "")
+```
+
+```{r include=FALSE}
+inmate_experiment_two <-
+  inmate_experiment_two %>%
+  mutate(is_high_reintegration_potential = if_else(reintegration_potential == "HIGH", 1, 0))
+```
+
+```{r reintegration, echo=FALSE, results='asis'}
+reintegration_potential_model <-
+  glm(is_high_reintegration_potential ~ race_analysis + age + aggregate_sentence_length,
+      data = inmate_experiment_two,
+      family = 'binomial')
+
+stargazer::stargazer(reintegration_potential_model, header=TRUE, type = "latex",
+                     title = "Logistic Regression Model Predicting a High Reintegration Potential Score for Female Inmates",
+                     out="tables/reintegration_potential_model.pdf")
+```
+
+The reintegration potential model arrived at statistically significant results for all three racial categories. 
+
+The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high reintegration potential score, the log odds that a White women and other racialized minority will receive a high reintegration potential score increase by 0.579 and 1.295 respectively. The p-value for Indigenous women with a high reintegration potential score is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high reintegration potential. 
+
+# Discussion and Future Research 
+
+# Bibliography 

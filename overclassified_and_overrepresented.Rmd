@@ -191,6 +191,8 @@ female_ds$race_analysis[female_ds$race_analysis == "South Asian"] <- "Other"
 
 ```{r include=FALSE}
 unique(female_ds$race_analysis)
+
+write_csv(female_ds, "csc_female_data.csv")
 ```
 
 ```{r include=FALSE}
@@ -461,7 +463,7 @@ cowplot::save_plot("Figures/reintegration_potential_score.pdf", plot=pp7, base_w
 reintegration
 ```
 
-# Results 
+# Model 
 
 ## Logistic Regression Model for Race and Inmate's Security Level 
 
@@ -613,7 +615,7 @@ inmate_experiment_four <-
 ```{r include=FALSE}
 inmate_experiment_four <-
   inmate_experiment_four %>%
-  mutate(is_high_static = if_else(static_risk == "LOW", 1, 0))
+  mutate(is_high_static = if_else(static_risk == "HIGH", 1, 0))
 ```
 
 ```{r static, echo=FALSE, results='asis'}
@@ -732,5 +734,7 @@ The reintegration potential model arrived at statistically significant results f
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high reintegration potential score, the log odds that a White women and other racialized minority will receive a high reintegration potential score increase by 0.579 and 1.295 respectively. The p-value for Indigenous women with a high reintegration potential score is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high reintegration potential. 
 
 # Discussion and Future Research 
+
+
 
 # Bibliography 

@@ -2,7 +2,7 @@
 title: "Overclassified and Overrepresented: Breaking the Cycle of Trauma and Crime for Indigenous Women in Canadian Federal Prisons (2012-2018)"
 author: "Laura Cline"
 date: "19/04/2021"
-abstract: "write abstract here"
+abstract: "This paper uses multiple logistic regression to explore the relationship between race and Canadian Correctional Services (CSC) risk assessment tools and race between 2012 to 2018. This analysis builds upon Tom Cardoso's original study 'Bias Behind Bars' (2020) by strictly examining female inmates in Canadian federal inmates. The study uses a CSC dataset on all federal inmates between 2012 to 2018. In the dataset, there are 34,047 female inmates. The paper exposes that Indigenous women are overclassified in Canadian federal prisons and are more likely to recieve the 'worst' score in risk assessments. Therefore, the paper concludes that the CSC risk assessment scores are trapping Indigenous women in a cycle of trauma and crime by limiting their ability to recieve additional privilieges, find employment opportunities, and campaign for early release. The code and data supporting this analysis is available on the project's GitHub repostiory: [Interdisciplinary Offenders](https://github.com/lauracline/Interdisciplinary_Offenders). "
 output:
   bookdown::pdf_document2:
 toc: TRUE
@@ -14,6 +14,108 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Introduction 
+
+On January 21st, 2020, Correctional Investigator of Canada Ivan Zinger revealed that the over-representation of Indigenous peoples in federal custody has reached a historic high and described the trend as “disturbing.” Zinger called for bold and urgent actions from corrections and government. Although Indigenous peoples account for roughly five percent of the population of Canada, Indigenous peoples account for more than 30 percent of the federal inmate population. In 2020, Indigenous women represented four percent of the total female population of Canada, but accounted for 42 percent of women in federal custody.  These numbers mean that about 1 in 100 Indigenous women are currently in a federal or provincial prison. 
+
+In this paper, we will use a multiple logistic regression model to analyze the relationship between race and Canadian Correctional Services (CSC) risk assessment scores for female federal inmates between 2012 to 2018. I hypothesize that Indigenous women are not only overrepresented in Canadian federal prisons, but are also overclassified with the "worst" risk assessment scores. These poor scores risk trapping Indigenous women in a cycle of trauma and crime because they are given worst scores for attributes outside their control or cannot change, bars these women from accessing beneficial educational programming and employment opportunities, exacerbates poor mental health and significantly reduces their likelihood of securing early release. 
+
+The code and data supporting this analysis is available on the project's GitHub repostiory: [Interdisciplinary Offenders](https://github.com/lauracline/Interdisciplinary_Offenders). 
+
+The remainder of this paper is structured as follows: Section 2 provides a literature review on the history of Indigenous women in Canada's prison system. Section 3 discusses the datasource, variables, the original's authors work and a descriptive analysis. Section 4 describes the logistic regression models. Section 5 analyzes the logistic regression models' results. Lastly, Section 6 explores the study's finding, weaknesses, and potential future research. 
+
+# Literature Review 
+
+On January 21st, 2020, Correctional Investigator of Canada Ivan Zinger revealed that the over-representation of Indigenous peoples in federal custody has reached a historic high and described the trend as “disturbing.” Zinger called for bold and urgent actions from corrections and government. Although Indigenous peoples account for roughly five percent of the population of Canada, Indigenous peoples account for more than 30 percent of the federal inmate population. Indigenous women make up four percent of the total female population of Canada yet now account for 42 percent of women in federal custody.  These numbers mean that  1 in 100 Indigenous women are currently in a federal or provincial prison. 
+
+There are many layers of historical and contemporary factors at play when it comes to understanding why Indigenous women may be more likely to be criminalized. 
+
+Violence against Indigenous women is an ongoing crisis with roots deep in Canada’s colonial history. The Canadian nation-state is premised upon the historical and ongoing invasion, settlement, and expropriation of Indigenous lands – the result of which has been the dispossession of Indigenous peoples, communities, and cultures. For instance, Kyllie Cripps’ *Media Constructions of Indigenous Women in Sexual Assault Cases: Reflections from Australia and Canada* (2019) argues that Indigenous women are more likely to be victims of violence rather than perpetrators. When Indigenous women do commit violence, its more likely to be in the form of self-defense against a male abuser. However, Cripps’ reveals using Canadian and Australian print and online news media from 2011 to 2018 that these women are often depicted as sexual deviants, prostitutes, alcohol and drug abusers, and inept mothers These negative depictions of Indigenous women contribute to a less sympathetic and indifferent reaction from audiences while perpetuating damaging sterotypes. Consequently, Indigenous women are effectively labeled as both “hopeless and helpless” because the media depicts Indigenous women as poor daughters, sisters, wives, and mothers.  Therefore, racist stereotypes towards Indigenous women may explain their increased incarceration rate because Indigenous women are perceived as more prone to violent behaviour, deserving of their abuse and unable to integrate into mainstream White society. 
+
+In colonial stories, Janice Acoose’s *Iskwewak Kah’ Ki Yaw Ni Wahkomakanak* (1995) suggests that Indigenous women are constrained to two tropes – the *Pocahontas* or the *Squaw*. For example, the *Pocahontas* is a young, chaste, naïve, and extremely beautiful Indigenous women, but is “wise” enough to fall in love with a White man, voluntarily abandon her family and community, and assimilate into Eurocentric cultural norms. The stereotype was created by European colonizers to prove that Indigenous peoples were “less evolved” and needed European intervention to become civilized and Christianized. In contrast, the *Squaw* stereotype was created by Jesuit missionaries to justify the rape, imprisonment, and enslavement of Indigenous women. The Squaw is a dark-skinned, overweight, inhuman and unattractive woman who lusts after White men. She does not intend to abandon her culture or convert to Christianity. Instead, she is depicted as manipulating White men into sin and spreading sexual diseases (i.e., syphilis). Consequently, Christian missionaries must control her by imprisoning, physically and sexually abusing, and converting her. The squaw is a powerful image that perpetuates stereotypes, and more importantly – as is apparent from the growing number of missing and murdered Indigenous women in Canada – fosters dangerous cultural attitudes that condone violence and imprisonment against Indigenous women. Thus, the increased incarceration of Indigenous women in a continuation of colonial methods to control the Squaw’s body and protect the virtue of White Canadian society. 
+
+In 2019, Statistics Canada calculated that Indigenous women are 3.5 times more likely than non-Indigenous women to be victims of physical and sexual violence, and are 5 times more likely to die as a result of this violence. Furthermore, Indigenous women (54%) are more likely than non-Indigenous women (37%) to report the most severe forms of domestic violence, such as being beaten, choked, threatened with a gun or knife, or sexually assaulted. Approximately, 75% of Indigenous sexual assault survivors are women under the age of 18, 50% are under the age of 14, and 25% are under the age of 7.  
+
+Of all the assaults committed against Indigenous peoples, perhaps the most infamous assault to Indigenous identity was the Residential School System. The schools operated for a period of 100 years and the last school closed in 1997. The effects of the Residential School system have been intergenerational and its violent legacy includes: physical, sexual, mental and emotional abuse; alcoholism, drug and solvent abuse; extreme poverty; low education rates; high unemployment rates; loss of identity; high suicide rates; loss of parenting skills with a high number of Indigenous children in the child welfare system; and a gross over-representation in the criminal justice system. 
+
+Prior to 1985, First Nations women were stripped of their Indian Status pursuant (to the registration provisions of the Indian Act) if they married a "non-Status Indian" or "non-Indian", started a University education, or registered to vote in federal elections. Furthermore, the Indian Act made it illegal for Status Indigenous women to vote or run for office in Canadian federal or provincial elections until the law was repealed on March 31st 1960. Consequently, Indigenous women have only recently received the right to vote and participate in Canada's political system. By and large, the Indian Act registration provisions led to the dislocation, disenfranchisement and isolation for First Nations women. The Indian Act forced many Indigenous women to leave their families and communities in order to receive their basic human rights. On top of all this, Indigenous women who chose to leave their families in order to marry, become educated, or just vote often faced financial uncertainty and blatant racism. 
+
+Indigenous women have been marginalized significantly by the impact of colonization and the Residential School system. Government policies that have impoverished Indigenous communities have left Indigenous female children and women vulnerable to exploitation and violence. Furthermore, racism and discrimination has denied the dignity and self-worth of Indigenous women by making them vulnerable to violence perpetrated against them by men. Therefore, the high number of Indigenous women in federal corrections are likely the result of their collective and individual circumstances.
+
+Canadian federal corrections must address the historical and contemporary needs of Indigenous women in a culturally and gender-appropriate manner. However, to date, the experience of Indigenous women in federal prisons is a continuation of Canada’s dark colonial legacy. 
+
+# Data
+
+## The Source of the Data
+
+The dataset we will use is the CSC Offender Management System from 2012 to 2018 https://www.theglobeandmail.com/files/editorial/News/nw-na-risk-1023/The_Globe_and_Mail_CSC_OMS_2012-2018_20201022235635.zip. 
+
+The dataset was collected from the Correction Service of Canada (CSC) Offender Management System and includes seven years’ worth of entries, from 2012 to 2018. Each year is captured as a snapshot of the database on March 31st, the last day of the CSC’s fiscal year. The dataset was collected by the Globe and Mail’s Tom Cardoso who sent a request to Anne Kelly, the Head of the CSC after dining a freedom of information request. 
+
+The dataset has 741,738 rows and 25 columns. It documents the lives of 49,165 people (inmates under federal jurisdiction) in custody or supervised release. The dataset lists each inmate’s age, gender, race and religion; details about the length of their sentence and their charges; and notes whether they are doing time at a minimum-, medium- or maximum-security facility, or are on parole. The dataset also includes data on five of the CSC’s most important risk scores. 
+
+The first risk score is Offender Security Level. The offender’s security level determines the layout, operations, and programs offered to inmates. The three security levels are maximum, medium, and minimum. 
+
+The second risk score Dynamic/Need. The dynamic risk assessment is performed by psychologists to predict an inmate’s likelihood of reoffending. Psychologists measure factors including antisocial behaviour, pro-criminal attitudes, neuroticism, and other personality factors. These scores are used to assess if an inmate can receive parole or early release. The three scores an inmate could receive are High, Medium, and Low. 
+
+The third risk score is Static/Risk. The static risk assessment is performed by psychologists to predict an inmate’s likelihood of reoffending. The three scores an inmate could receive are High, Medium, and Low. 
+
+The fourth risk score is Motivation. The motivation score measures if an inmate takes accountability for their crimes and motivation to not reoffend.  The three scores an inmate could receive are High, Medium, and Low.
+
+The fifth risk score is Reintegration Potential. The reintegration potential assessment is performed by psychologists to predict if an inmate will be able to reintegrate into society (e.g., finding housing, gaining employment, static risk, and dynamic risk). The three scores an inmate could receive are High, Medium, and Low.
+
+Within the sample, 34,047 of the inmates are female; 11,751 of these female inmates are Indigenous, 17,831 female inmates are White, and 4,465 female inmates are neither White or Indigenous. 
+
+## Original Author
+
+This paper is a reproduction and extension of the Globe and Mail’s Bias behind bars (November 2020) two-year investigation by the Globe’s crime and justice reporter Tom Cardoso, that uncovered systematic bias in Canada’s prison system. Cardoso used the same dataset to study reassessment scores by race in federal correction institutions. Cardoso discovered a disturbing pattern – Indigenous and Black people seemed to receive worst scores across a range of assessments more frequently than other groups. 
+
+Cardoso’s original study also exclusively focused on male inmates because less than 5 percent of the inmates in the dataset were female. Thus, female inmates were removed from the original study. 
+
+Cardoso’s model discovered that Indigenous men were 29.5% more likely to end up with a low reintegration score compared to White men, and that Black men were 6.1% less likely. He also built a model to test how well the reintegration potential score predicted future offending which returned statistically significant results for Black men and non-significant results for Indigenous and White men. Hence, Cardoso reveals that Black and Indigenous people face significantly disparate outcomes at the hands of the Canadian justice system. 
+
+The following Monday after Bias Behind Bars was published, the investigation sparks unanimous support of MPs from all parties calling for an independent study on systematic discrimination in federal prisons, including inmates’ risk and security assessments. Cardoso has started a national conversation about systematic racism and bias in Canada’s institutions and his reporting has laid down a framework upon which reform can begin. 
+
+I hope to add upon Cardoso’s research by examining the CSC’s reassessment tool’s predictive validity to predict female inmates’ risk of reoffending and if the tool is also systematically biased against Indigenous women. 
+
+I am also making two additional changes from Tom Cardoso's original research. 
+
+1. I will not be calculating how many inmates reoffended between 2012 to 2018. I chose not to calculate this because my dataset is limited to a short timeframe. Thus, I cannot confirm if an inmate came into this dataset with a previous criminal history or if they reoffended after 2018. 
+
+2. I will also not be using the Sentence Type as a control variable in my logistic regression models. Although I beleive this is an important variable that should be added to the model, I cannot include it due to time constraints. Tom Cardoso originally converted all 700 sentence types into weights based on Statistics Canada's Crime Severity Index. However, I am unable to do this because the Crime Severity Index is not publicly available and instead you must request access to the Crime Severity Index. Secondly, the 700 sentence types must be manually converted to weights which is extremely time consuming and this variable is not a focus of my analysis. 
+
+I also constructed two new variables that were not part of the original dataset. 
+
+1. First, I cleaned up the race column by grouping all the ethnic groups into 22 races. I grouped different ethnic groups into races based on Statistics Canada's *Visible Minority and Population Group Reference Guide, Census of the Population, 2016*. I put different groups into races because the race column mixes races and ethnicities and also uses different names for the same racial group (e.g., Black, African American, Nigerian; White, Euro-Canadian, British). 
+
+2. Second, my analysis is strictly focused on CSC scores for Indigenous women. Consequently, I created a new column that puts all Indigenous women under the umbrella term "Indigenous, all White women under the umbrella term "White", and all other racialized minorities under the umbrella term "Other". 
+
+## Data Ethics 
+
+In addition to potential biases that may have occurred when the data was collected by the CSC and initially cleaned by Thomas Cardoso, we must also consider the ethical implications of choosing to use this dataset, our decisions when cleaning the data, and how we interpret the model’s results. We must be especially careful because our research question is geared towards vulnerable and racialized groups in Canada. 
+
+To guide our ethical questions, I will use danah boyd, Solon Carocas, Kate Crawford, and numerous other scholars’ guidance on the 10 Simple Rules for Responsible Big Data Research (2017) The 10 rules include:
+1.	Acknowledge that data are people and can do harm 
+2.	 Recognize that privacy is more than a binary value 
+3.	Guard against re-identification of your data
+4.	Practice ethical data sharing 
+5.	Consider the strengths and limitations of your data; big data does not automatically mean better
+6.	Debate the tough, ethical choices
+7.	Develop the code of conduct for your organization, research community, or industry
+8.	Design your data and systems for auditability
+9.	Engage with the broader consequences of data and analysis practices
+10.	Know when to break the rules 
+
+First, I must acknowledge my own racial and social biases before beginning my analysis. I am a cis, White, able-bodied, educated, and financially privileged woman. I have also never been or know someone who was incarcerated. I have never experienced structural racism and I have undoubtedly benefited from white privilege. I have benefited from colonization and the dehumanization of Indigenous peoples because I am settler on Indigenous land. Therefore, my implicit and unconscious bias will influence how I frame the research question, conduct my experiment, and interpret the results which may be incorrect, racist, and perpetuate systematic discrimination against Indigenous peoples. I will use anti-racist tools to reduce my unconscious bias by educating myself on the historical context from a diversity of sources and pedagogies, recognize peoples’ individuality and humanity, actively working for anti-racist policies and reparations, cultivating empathy, critically examining my own bias and thoughts, ensuring my research is open to debate and criticism, and using my privileged position to center less-privileged and important voices. 
+
+Second, I will protect privacy by ensuring the dataset’s attributes will not contain personally identifiable information. The dataset also does not include information about the individual’s location and does not record name or date they were incarcerated. Therefore, it is very difficult to trace back each row to an individual person unless a person had access to the inmate’s sentence id or offender number. However, this data is kept at the CSC and is highly confidential and secure. 
+
+Third, I will ensure the results can be audited by making the data, code, and results publicly available via a GitHub repository. This ensures that our work is reproducible as well as methodologically robust. 
+
+Fourth, a tough ethical choice I debated when interpreting the data was how do we classify an inmate’s gender and ethnic identity. The “GENDER” field strictly reports two values – “Male” or “Female”. Although these are the two biological sexes, individuals may identify with a gender that is different from their sex given at birth or they may identify with a non-traditional notion of gender. “Transgender” characteristics those who identify with a non-traditional gender. However, transgender inmates are currently prisons based on their sexual anatomy. Thus, there may be self-identified female inmates missing from the dataset and self-identified male inmates included in the dataset which may skew the results. Also, the CSC’s decision to omit this gender identity also discourages more meaningful analysis and research questions about how transgender inmates are impacted by the Canadian prison system and how their reassessment scores may also reflect structural bias towards transgender individuals. A second question is how the dataset defines “Indigenous” and who is included in the category. According to Tom Cardoso, the “RACE” feature is based on inmates self-identified ethnic identity when they first arrived at prison. Additionally, the dataset does not account for mixed-race and -ethnic identities because inmates are forced to choose one race. Therefore, the dataset is missing nuance because we cannot examine the impact of being mixed-race on risk reassessment scores and many individuals may be omitted from the Indigenous category if they choose to identify with another race. 
+
+Fifth, I had to make the tough choice to include races other than Indigenous and White in my analysis. While Tom Cardoso’s investigation revealed that Black male inmates are more likely to receive worst risk assessment scores compared to White male inmates, I unfortunately do not have enough data to make a similar comparison using female inmates. While it is crucial to study and analyze data on this overlooked population, the fact that our sample does not include enough data on non-Indigenous and non-White female inmates could lead to my models making incorrect conclusions with low internal and external validity. 
+
+Lastly, I must consider the impact my research may have on the racial groups I chose to analyze. For instance, if I discover that Indigenous women get higher Dynamic and Static risk scores compared to White women, I risk perpetuating the stereotype that Indigenous women are violent, deserve to be imprisoned, and dehumanized. Thus, I will try to reduce perpetuating racist stereotypes and prejudice by beginning this paper with a brief overview of  Indigenous women’s’ history, listing qualitative sources about Indigenous women’s experiences in the Canadian prison system, and including methods and strategies proposed by Indigenous women and their communities to empower Indigenous women and reduce the female incarceration rate in a way that is gender- and culturally-appropriate. 
 
 ```{r include=FALSE}
 # Load and install packages
@@ -201,9 +303,13 @@ indigenous_df <- female_ds %>%
   filter(race_grouping == "Indigenous")
 ```
 
-# Data 
-
 ##  Descriptive Analysis 
+
+### There were 34,047 Female Inmates in Federal Custody Between 2012 and 2018
+
+Table 1 illustrates that there are 34,047 female inmates in the sample. The average age for a women in federal custody is 37.04 and the average sentence length is 3.36 years.
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and kableExtra [@citeKableExtra]. 
 
 ```{r crocus, echo=FALSE}
 # Table for Total Female Inmates
@@ -224,6 +330,17 @@ inmates_table <- number_of_inmates %>%
 inmates_table
 ```
 
+### Indigenous Women Represent 34.51% of Female Inmates, but Only 4% of the Canadian Female Population 
+
+Table 2 shows that Indigenous women are overrepresented in federal custody 34.51% of all female inmates between 2012 and 2018. yet only represent 4% of Canada's overall female population. Indigenous women are also below the average age for a female inmate at 34.52 years and serve a shorter average sentence length of 3.13 years. 
+
+In contrast, White women are underpresented in federal custody at 52.54% of inmates yet White women represent ~80% of the Canadian female population. White women are also slightly above the average age for a female inmate at 38.62 years and are right on the average sentence length of 3.36 years. 
+
+The racial group that has the highest average age are South Asian women at 39.40 years and the racial group with the lowest average age are inmates "Unable to Specify" at 30.96 years. The "Unable to Specify" category does not mean that an inmate is multiracial, but instead that they did not disclose their racial identity when they entered custody. 
+
+The racial group with the highest average sentence length are Latin American women at 5.35 years and the racial group with the lowest average sentence length are "Unable to Specify". Unfortunately, the representation of non-Indigenous racialized minorities will not be covered in this analysis, but it does open up opportunities for further study. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and kableExtra [@citekableExtra]. 
 
 ```{r daffodil, echo=FALSE}
 inmate_chars_race <- female_ds %>%
@@ -247,7 +364,10 @@ race_table <- inmate_chars_race %>%
 race_table
 ```
 
-## Create graph to show proportions for ethnic groups 
+
+Figure 1 visualizes the number of female inmates per race in federal custody. The graph demonstrates that Indigenous women are the second largest racial group represented in federal custody between 2012 and 2018. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
 
 ```{r tulip, echo=FALSE}
 race_plot <- female_ds %>%
@@ -272,6 +392,13 @@ cowplot::save_plot("Figures/total_inmates_by_race.pdf", plot=pp1, base_width=7, 
 race_plot
 ```
 
+Since the distribution of CSC risk scores for non-Indigenous racialized women is beyond the scope of this analysis, I encourage you to explore and discover patterns on your own using this Shiny app [here](https://lauracline.shinyapps.io/Interdisciplinary_Offenders/).  
+
+### North American First Nations Women Represent the Majority of Indigenous Women in Federal Custody 
+
+Table 3 demonstrates that North American First Nations women represent 71% of Indigenous women in federal custody. The three Indigenous groups are all below the average age for a female inmate with North American First Nations women having the highest average age at 35.03 years and Inuit women the lowest at 31.54 years. We see a similiar pattern in the average aggregate sentence length with Inuit women serving the shortest average sentence while Metis women serve the longest. These results are very interesting because most Inuit people live in the Canada's three territories where they have majority representation in the territorial governments. Thus, there may be a pattern between political representation and representation in federal custody, but this is just an assumption that requires further research. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and kableExtra [@citekableExtra]. 
 
 ```{r hyacinth, echo=FALSE}
 # Races for Indigenous Women 
@@ -294,7 +421,9 @@ indigenous_distribution %>%
   #save_kable("Tables/total_female_indigenous_inmates_by_ethnic.pdf")
 ```
 
-## Create a graph to show proportion of indigenous women 
+Similarily, Figure 2 visualizes that North American First Nations women are the largest Indigenous group represented in federal custody. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
 
 ```{r winter, echo=FALSE}
 i_plot <- indigenous_df %>%
@@ -319,7 +448,19 @@ cowplot::save_plot("Figures/total_inmates_by_indigenous_ethnic.pdf", plot=pp2, b
 i_plot
 ```
 
-# Offender Security Level 
+### Indigenous Women are More Likely to Receive a Maximum Security Level 
+
+The offender security level, which can be set to minimum, medium, and maximum, is used to assign inmates to institutions and treatment programs. A security level classification is assigned by the warden of the federal prison based on if the inmate is a threat to other inmates' safety, they require a high level of supervision, or if they have a higher chance of escaping. An inmate who receives a maximum-security classification will typically be assigned to a maximum security prison, area or facility. 
+
+Figure 3 demonstrates that Indigenous women are more likely to be receive a Maximum Security Level compared to White and other racial minority inmates. Indigenous women are also the least likely to receive a minimum security level. 
+
+These results are very significant because women received a maximum security level receive the highest level of supervision and are not allowed to leave their cells except for 1 hour of supervised exercise each day. They are also given no privileges and are banned from communicating with other inmates. Thus, women in this security level are extremely isolated and controlled. Furthermore, it is impossible for women in a maximum security prison to receive a high reintegration potential. Consequently, these women are not eligible for shorter sentences or parole. 
+
+In contrast, women who receive a minimum security level receive less supervision and more privileges. Women in minimum security prisons are allowed to leave the prison to work, receive career training, or attend school. They are also given more privileges such as increased access to visitors, more exercise time, eat their meals with other inmates, use the prison library, and associate with other inmates. They are also given better living conditions such as larger cells. Women in minimum security prisons are also eligible to receive a shorter sentence or parole. Women in minimum security are less isolated and have more opportunities to shorten their sentence. 
+
+Therefore, Indigenous women receive stricter sentences, harsher living conditions, and less opportunities for early release compared to White and other racialized minority inmates. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
 
 ```{r aconite, echo=FALSE}
 security_level_sorted <-
@@ -348,7 +489,32 @@ cowplot::save_plot("Figures/inmate_security_level_score.pdf", plot=pp3, base_wid
 security
 ```
 
-# Dynamic/Need
+### Indigenous Women are More Likely to Receive a High Dynamic Risk Score
+
+The dynamic/need score is assigned to inmates based on their results from the CSS's *Dynamic Factor Identification and Analysis Revised Assessment Report*. The Dynamic score predicts whether an individual will commit a crime based on their family, educational, and professional background, including:
+
+https://www.csc-scc.gc.ca/acts-and-regulations/705-6-cd-en.shtml#7
+
+1. Academic History: More years of education and educational achievement leads to lower score.
+2. Work History: More years of employment, not being unemployed at time of arrest, and stable job history leads to lower score.
+3. Work Skill Set: Marketable and in-demand skills leads to lower score.
+4. Work Attitudes: Offender's belief they can reintegrate into the workforce and strong work ethic leads to lower score.
+5. Childhood: Strong attachment to family unit, no history of being abused during childhood, and no criminally active family members leads to lower score. 
+6. Intimate Relationships: Being in a long-term relationship and no history of being a victim/perpetrator of domestic abuse leads to lower score. 
+7. Parenting: Strong parental skills and no history of child abuse leads to lower score. 
+8. Criminal: No relationships with other criminals leads to lower score. 
+9. Prosocial Support: Ability to receive financial support from a partner, family, or friend leads to lower score. 
+10. Substance Abuse and Drug Use: No history of substance abuse or drug use leads to lower score. 
+11. Community Functioning: Rarely changing residences during the last year, financial stability, constructive hobbies, and strong attachment to the community leads to lower score. 
+12. Personal/Emotional: Openness to new experiences, strong problem-solving, strong critical thinking, low anxiety, high self-regulation, planning for the future, strong interpersonal skills, and low aggression leads to a lower score. 
+13. Attitudes: Displaying negative attitudes towards crime, destruction of property, and violence leads to lower score. 
+14. Responsitivity: English fluency (verbal and written), high concentration, extroversion, no mental health issues, and no disabilities leads to a lower score. 
+
+The dynamic risk score is very important because it is a factor in the reintegration potential score. 
+
+Figure 4 highlights that Indigenous women are the most likely to receive a high dynamic score and the least likely to receive a low dynamic score compared to White and other racialized minority inmates. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
 
 ```{r snakeshead, echo=FALSE}
 dynamic_sorted <-
@@ -377,7 +543,22 @@ cowplot::save_plot("Figures/dynamic_need_score.pdf", plot=pp4, base_width=7, bas
 dynamic
 ```
 
-# Static/Risk 
+### Indigenous Women Overclassified With a High Static Risk Score
+
+The static risk score is assigned to inmates after completing the CSS's *Static Factor Assessment*. It is based on the inmate's personal history in the criminal justice system. The result of the score is a factor in an inmate's potential reintegration score. An inmate can receive a high, medium, or low rating. 
+
+The guidelines for determining the overall rating for static factor are:
+
+1. A rating of HIGH reflects a case in which: the Criminal 
+History Record reflects a considerable involvement in the criminal justice system, the Offense Severity Record reflects considerable harm on society and their victims, and the Sex Offence History Checklist demonstrates a considerable history in sex offending. 
+
+2. A rating of LOW reflects a case in which: the Criminal History Record reflects a low involvement in the criminal justice system, the Offence Severity Record shows little or no harm on society and their victims, and the Sex Offence History reflects little or no sex offending. 
+
+3. A rating of MEDIUM signifies that the offender is no a low criminal risk, but not a high criminal risk either. 
+
+Figure 5 suggests that Indigenous women are more significantly likely to receive a high static risk score and are the least likely low static risk score compared to White and other racialized minority women. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
 
 ```{r lily, echo=FALSE}
 static_sorted <-
@@ -406,7 +587,22 @@ cowplot::save_plot("Figures/static_risk_score.pdf", plot=pp5, base_width=7, base
 static
 ```
 
-# Motivation 
+### Indigenous Women are Overrepresented as Having a High Motivation to Recommit After Release 
+
+The motivation score determines if an inmate has a criminal motivation to recommit their crime(s) after they are released. The test is performed by a psychologist and the offender must prove to the psychologist that they have no desire to recommit their crimes. The psychologist asks the inmates questions in eight categories: education, employment, marital/family, associates, substance abuse, community functioning, personal/emotional orientation, and attitudes. 
+
+There are three possible scores: 
+
+1. HIGH: The offender fully recognizes a need requiring intervention and is fully ready to start intervention. They are committed to change and are already engaging in behavior related to change. They are motivated by internal reasoning (e.g., religion, improving themselves, being a better mother, etc.). 
+
+2. MEDIUM: The offender may not fully know or accept their deficit, but participate in the recommended programs or other interventions. They are not geniuinly committed to change and are motivated by external benefits (i.e., securing a shorter sentence, more privileges and freedoms, etc.). 
+
+3. LOW: The offender has no motivation to change their behaviour or genuine commitment to change. 
+
+Figure 6 illustrates that Indigenous women are slightly overclassified as having a low motivation to reform and change their behaviour by participating in the recommend programs. Similarily, they are also the least likely to receive a high motivation score compared to White and other racialized minority inmates. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
+
 ```{r bluebell, echo=FALSE}
 motivation_sorted <-
   female_ds %>%
@@ -420,7 +616,7 @@ motivation <- motivation_sorted %>%
   theme_minimal() +
   scale_fill_brewer(palette = "Reds", name = "Motivation Score") +
   labs(
-    title = "Indigenous Women Classified as Having a Low Criminal Motivation (2012-2018)",
+    title = "Indigenous Women Classified as Having a Low Motivation to Reform \n(2012-2018)",
     subtitle = "On top of their high security level, dynamic risk, and static risk, Indigenous women are \nclassified as having low motivation to change and reform compared to White women.",
     caption = "(Data from Correctional Services Canada (2020))",
              x = "Ethnic Group",
@@ -434,7 +630,19 @@ cowplot::save_plot("Figures/motivation_score.pdf", plot=pp6, base_width=7, base_
 motivation
 ```
 
-# Reintegration Potential 
+### Indigenous Women are Significantly Less Likely to Receive a High Reintegration Potential 
+
+The final score an inmate receives is the Reintegration Potential Score. The reintegration potential score is determined by an inmate's security level, dynamic risk score, static risk score, and motivation score. Reintegration scores are extremely important for inmates because they determine if an inmate receives more privileges and freedoms within the prison, and a high reintegration potential increases their likelihood of receiving parole. 
+
+The Reintegration Potential includes three scores:
+
+1. LOW: an inmate received the worst score in two or more of the four tools. 
+2. MEDIUM: an inmate received the worst score in any one tool and one moderate score in at least one tool. 
+3. HIGH: an inmate who did not receive the worst score in any four of the tools and received at least three best scores in three or more of the four tools. 
+
+Figure 7 shows that Indigenous women are the least likely to receive a high reintegration score so they can secure early release. Indigenous women are also significantly more likley to receive a low reintegration potential compared to White and other racial minority inmates. Consequently, the five scores together suggest that the CSC's inmate assessment tools may be trapping Indigenous women in a cycle of trauma and crime. 
+
+The table was constructing using R [@citeR], tidyverse [@citeTidyverse], and ggplot [@citeGGplot2]. 
 
 ```{r bulb, echo=FALSE}
 reintegration_sorted <-
@@ -449,7 +657,7 @@ reintegration <- reintegration_sorted %>%
   theme_minimal() +
   scale_fill_brewer(palette = "Greens", name = "Reintegration Potential") +
     labs(
-    title = "Indigenous Women Given the Most Low Reintegration Scores (2012-2018)",
+    title = "Indigenous Women Given the Most Low Reintegration Scores \n(2012-2018)",
     subtitle = "White women and non-Indigenous minority groups are more likely to be given high \nreintegration scores compared to Indigenous women.",
     caption = "(Data from Correctional Services Canada (2020))",
              x = "Ethnic Group",
@@ -463,19 +671,19 @@ cowplot::save_plot("Figures/reintegration_potential_score.pdf", plot=pp7, base_w
 reintegration
 ```
 
-# Model 
-
-## Logistic Regression Model for Race and Inmate's Security Level 
-
-The offender security level, which can be set to minimum, medium, and maximum, is used to assign inmates to institutions and treatment programs. An inmate who receives a maximum-security classification will typically be assigned to a maximum security prison, area or facility. 
-
-To test the effect of race on an inmate's security level. the first logistic regression model examines the likelihood that female inmates would end up with the worst possible security level- maximum - against the odds they would receive a medium or minimum one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (maximum security level: yes or no).
+# Model
 
 The formula for logistic regression is:
 
 $p(X) = \frac{e^{\beta_{0}+\beta_{1}X}}{1+e^{\beta_{0}+\beta_{1}X}}$
 
 Where $p$ is the probability of $X$ (the mean of the dependent variable), $e$ is the base of the natural logarithm (about 2.718), and $\beta_{0}$ and $\beta_{1}$ are the parameters of the model (y-intercept and slope respectively).
+
+# Results 
+
+## Inmate Security Level Logistic Regression Model for Race 
+
+To test the effect of race on an inmate's security level. the first logistic regression model examines the likelihood that female inmates would end up with the worst possible security level- maximum - against the odds they would receive a medium or minimum one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R [@citeR], forcats [@citeForcats] and stargazer [@citeStargazer]. We will use logistic regression because our response variable is binary (maximum security level: yes or no).
 
 Our null and alternative hypothesis are:
 
@@ -518,28 +726,7 @@ The security level model arrived at statistically significant results for all th
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a maximum security level, the log odds that a White women and other racialized minority will receive a maximum security level decrease by 1.068 and 0.646 respectively. The p-value for Indigenous women in maximum security is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a maximum security level. 
 
-## Dynamic/Need Score Model
-
-The dynamic/need score is assigned to inmates based on their results from the CSS's *Dynamic Factor Identification and Analysis Revised Assessment Report*. The Dynamic score predicts whether an individual will commit a crime based on their family, educational, and professional background, including:
-
-https://www.csc-scc.gc.ca/acts-and-regulations/705-6-cd-en.shtml#7
-
-1. Academic History: More years of education and educational achievement leads to lower score
-2. Work History: More years of employment, not being unemployed at time of arrest, and stable job history leads to lower score
-3. Work Skill Set: marketable and in-demand skills leads to lower score
-4. Work Attitudes offender's belief they can reintegrate into the workforce and strong work ethic leads to lower score
-5. Childhood: strong attachment to family unit, no history of being abused during childhood, and no criminally active family members leads to lower score. 
-6. Intimate Relationships: being in a long-term relationship and no history of being a victim/perpetrator of domestic abuse leads to lower score. 
-7. Parenting: strong parental skills and no history of child abuse leads to lower score. 
-8. Criminal: no relationships with other criminals leads to lower score. 
-9. Prosocial Support: ability to receive financial support from a partner, family, or friend leads to lower score. 
-10. Substance Abuse and Drug Use: no history of substance abuse or drug use leads to lower score. 
-11. Community Functioning: rarely changing residences during the last year, financial stability, constructive hobbies, and strong attachment to the community leads to lower score. 
-12. Personal/Emotional: openness to new experiences, strong problem-solving, strong critical thinking, low anxiety, high self-regulation, planning for the future, strong interpersonal skills, and low aggression leads to a lower score. 
-13. Attitudes: displaying negative attitudes towards crime, destruction of property, and violence leads to lower score. 
-14. Responsitivity: English fluency (verbal and written), high concentration, extroversion, no mental health issues, and no disabilities leads to a lower score. 
-
-The dynamic risk score is very important because it is a factor in the reintegration potential score. 
+## Dynamic/Need Score Logistic Regression Model for Race 
 
 To test the effect of race on an inmate's dynamic risk score. The second logistic regression model examines the likelihood that female inmates would end up with the worst possible dynamic risk score- high - against the odds they would receive a medium or low one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (high dynamic score: yes or no).
 
@@ -581,18 +768,7 @@ The dynamic risk model arrived at statistically significant results for all thre
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high dynamic score, the log odds that a White women and other racialized minority will receive a high dynamic score decrease by 0.493 and 1.189 respectively. The p-value for Indigenous women with a high dynamic risk is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high dynamic risk score.
 
-## Static Risk Model 
-
-The static risk score is assigned to inmates after completing the CSS's *Static Factor Assessment*. It is based on the inmate's personal history in the criminal justice system. The result of the score is a factor in an inmate's potential reintegration score. An inmate can receive a high, medium, or low rating. 
-
-The guidelines for determining the overall rating for static factor are:
-
-1. A rating of HIGH reflects a case in which: the Criminal 
-History Record reflects a considerable involvement in the criminal justice system, the Offense Severity Record reflects considerable harm on society and their victims, and the Sex Offence History Checklist demonstrates a considerable history in sex offending. 
-
-2. A rating of LOW reflects a case in which: the Criminal History Record reflects a low involvement in the criminal justice system, the Offence Severity Record shows little or no harm on society and their victims, and the Sex Offence History reflects little or no sex offending. 
-
-3. A rating of MEDIUM signifies that the offender is no a low criminal risk, but not a high criminal risk either. 
+## Static Risk Score Logistic Regression Model for Race 
 
 To test the effect of race on an inmate's static risk score. The second logistic regression model examines the likelihood that female inmates would end up with the worst possible static risk score- high - against the odds they would receive a medium or low one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (high static score: yes or no).
 
@@ -633,17 +809,7 @@ The static risk model arrived at statistically significant results for all three
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high static score, the log odds that a White women and other racialized minority will receive a high dynamic score decrease by 0.965 and 1.187 respectively. The p-value for Indigenous women with a high dynamic risk is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high static risk score.
 
-# Motivation Model 
-
-The motivation score determines if an inmate has a criminal motivation to recommit their crime(s) after they are released. The test is performed by a psychologist and the offender must prove to the psychologist that they have no desire to recommit their crimes. The psychologist asks the inmates questions in eight categories: education, employment, marital/family, associates, substance abuse, community functioning, personal/emotional orientation, and attitudes. 
-
-There are three possible scores: 
-
-1. HIGH: The offender fully recognizes a need requiring intervention and is fully ready to start intervention. They are committed to change and are already engaging in behavior related to change. They are motivated by internal reasoning (e.g., religion, improving themselves, being a better mother, etc.). 
-
-2. MEDIUM: The offender may not fully know or accept their deficit, but participate in the recommended programs or other interventions. They are not geniuinly committed to change and are motivated by external benefits (i.e., securing a shorter sentence, more privilges and freedoms, etc.). 
-
-3. LOW: The offender has no motivation to change their behaviour or genuine commitment to change. 
+## Motivation Score Logistic Regression Model for Race 
 
 To test the effect of race on an inmate's motivation score. The second logistic regression model examines the likelihood that female inmates would end up with the worst possible motivation score - low - against the odds they would receive a medium or high one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (low static score: yes or no).
 
@@ -684,15 +850,7 @@ The motivation model arrived at statistically significant results for all three 
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a low motivation score, the log odds that a White women and other racialized minority will receive a low motivation score decrease by 0.792 and 0.794 respectively. The p-value for Indigenous women with a low motivation is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a low motivation score.
 
-## Race and Inmate's Reintegration Potential Score
-
-The final score an inmate receives is the Reintegration Potential Score. The reintegration potential score is determined by an inmate's security level, dynamic risk score, static risk score, and motivation score. Reintegration scores are extremely important for inmates because they determine if an inmate receives more privileges and freedoms within the prison, and a high reintegration potential increases their likelihood of receiving parole. 
-
-The Reintegration Potential includes three scores:
-
-1. LOW: an inmate received the worst score in two or more of the four tools. 
-2. MEDIUM: an inmate received the worst score in any one tool and one moderate score in at least one tool. 
-3. HIGH: an inmate who did not receive the worst score in any four of the tools and received at least three best scores in three or more of the four tools. 
+## Reintegration Potential Score Logistic Regression Model for Race 
 
 To test the effect of race on an inmate's reintegration potential score. The second logistic regression model examines the likelihood that female inmates would end up with the best possible reintegration potential score - high - against the odds they would receive a medium or low one. Since, this project is focused on Indigenous women, the three race categories are Indigenous, White, and Other. The model will control for age and aggregate sentence length because the score is recalculated throughout the inmate's sentence. The logistic regression was created using R and stargazer. We will use logistic regression because our response variable is binary (high reintegration potential score: yes or no).
 
@@ -735,6 +893,11 @@ The logistic regression results demonstrate that for every one unit increase in 
 
 # Discussion and Future Research 
 
-
+Talk about dynamic scores and factors outside their control
+Static scores
+Maximum security prison and improving the motivation scores 
+Maximum security reduces their ability to improve their dynamic score 
+Maximum security leading to poor mental health outcomes that affect the dynamic and motivation score 
+How these scores affect motivation 
 
 # Bibliography 

@@ -1,8 +1,8 @@
 
 % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Sun, Apr 04, 2021 - 20:50:35
+% Date and time: Thu, Apr 08, 2021 - 21:36:07
 \begin{table}[!htbp] \centering 
-  \caption{Logistic Regression Model Predicting Dynamic Score for Female Inmates} 
+  \caption{Logistic Regression Model Predicting a High Dynamic Score for Female Inmates} 
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}}lc} 
 \\[-1.8ex]\hline 

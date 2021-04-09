@@ -1,6 +1,6 @@
 
 % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Sun, Apr 04, 2021 - 22:16:07
+% Date and time: Thu, Apr 08, 2021 - 21:36:08
 \begin{table}[!htbp] \centering 
   \caption{Logistic Regression Model Predicting a High Static Score for Female Inmates} 
   \label{} 
@@ -11,22 +11,22 @@
 \cline{2-2} 
 \\[-1.8ex] & is\_high\_static \\ 
 \hline \\[-1.8ex] 
- race\_analysisOther & 1.412$^{***}$ \\ 
-  & (0.041) \\ 
+ race\_analysisOther & $-$1.187$^{***}$ \\ 
+  & (0.046) \\ 
   & \\ 
- race\_analysisWhite & 0.895$^{***}$ \\ 
-  & (0.031) \\ 
+ race\_analysisWhite & $-$0.965$^{***}$ \\ 
+  & (0.028) \\ 
   & \\ 
- age & 0.020$^{***}$ \\ 
+ age & 0.007$^{***}$ \\ 
   & (0.001) \\ 
   & \\ 
- Constant & $-$2.372$^{***}$ \\ 
-  & (0.047) \\ 
+ Constant & $-$0.673$^{***}$ \\ 
+  & (0.044) \\ 
   & \\ 
 \hline \\[-1.8ex] 
 Observations & 32,306 \\ 
-Log Likelihood & $-$18,302.290 \\ 
-Akaike Inf. Crit. & 36,612.590 \\ 
+Log Likelihood & $-$18,053.360 \\ 
+Akaike Inf. Crit. & 36,114.730 \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 

@@ -140,15 +140,7 @@ library(ROCR)
 
 ```{r include=FALSE}
 #Load data 
-csc_data <- read.csv("The_Globe_and_Mail_CSC_OMS.csv")
-```
-
-```{r include=FALSE}
-# Create dataset just for female inmates 
-female_ds <- csc_data %>%
-  filter(GENDER == "FEMALE")
-
-female_ds
+female_ds <- read.csv("csc_female_data.csv")
 ```
 
 ```{r include=FALSE}
@@ -801,13 +793,13 @@ inmate_experiment_one <-
   mutate(is_high_offender_security_level = if_else(offender_security_level == "MAXIMUM", 1, 0))
 ```
 
-```{r test1, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Receiving the Maximum Security Level and Race or Age"}
+```{r test1, echo=FALSE, message=FALSE, warning=FALSE}
 offender_security_level_model <-
   glm(is_high_offender_security_level ~ race_analysis + age,
       data = inmate_experiment_one,
       family = 'binomial')
 
-huxreg("test" = offender_security_level_model, number_format = 5, bold_signif = 0.05)
+huxreg("Logistic Regression Model Predicting a Maximum Security Score Using Race and Age" = offender_security_level_model, number_format = 5, bold_signif = 0.05)
 ```
 
 ```{r security, include=FALSE, results='asis'}
@@ -851,10 +843,10 @@ auc1 <- auc1@y.values[[1]]
 
 auc1 %>%
   knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is Maximum Security Level' Model") %>%
-  kableExtra::kable_styling(latex_options = "scale_down")
+  kableExtra::kable_styling()
 ```
 
-```{r perf1, echo=FALSE}
+```{r perf1, echo=FALSE, fig.cap = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is Maximum Security Level' Model"}
 plot(perf1, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is Maximum Security Level' Model")
 ```
 
@@ -885,13 +877,13 @@ inmate_experiment_three <-
   mutate(is_high_dynamic = if_else(dynamic_need == "HIGH", 1, 0))
 ```
 
-```{r test2, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a High Dynamic Risk Score and Race or Age"}
+```{r test2, echo=FALSE, message=FALSE, warning=FALSE}
 offender_dynamic_model <-
   glm(is_high_dynamic ~ race_analysis + age,
       data = inmate_experiment_three,
       family = 'binomial')
 
-huxreg("test2" = offender_dynamic_model, number_format = 5, bold_signif = 0.05)
+huxreg("Logistic Regression Model Predicting a High Dynamic Risk Score Using Race and Age" = offender_dynamic_model, number_format = 5, bold_signif = 0.05)
 ```
 
 ```{r dynamic, include=FALSE, results='asis'}
@@ -935,10 +927,10 @@ auc2 <- auc2@y.values[[1]]
 
 auc2 %>%
   knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is High Dynamic' Model") %>%
-  kableExtra::kable_styling(latex_options = "scale_down")
+  kableExtra::kable_styling()
 ```
 
-```{r perf2, echo=FALSE}
+```{r perf2, echo=FALSE, fig.cap = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Dynamic' Model"}
 plot(perf2, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Dynamic' Model")
 ```
 
@@ -968,13 +960,13 @@ inmate_experiment_four <-
   mutate(is_high_static = if_else(static_risk == "HIGH", 1, 0))
 ```
 
-```{r test3, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a High Static Risk Score and Race or Age"}
+```{r test3, echo=FALSE, message=FALSE, warning=FALSE}
 offender_static_model <-
   glm(is_high_static ~ race_analysis + age,
       data = inmate_experiment_four,
       family = 'binomial')
 
-huxreg("test" = offender_static_model, number_format = 5, bold_signif = 0.05)
+huxreg("Logistic Regression Model Predicting a High Static Risk Using Race and Age" = offender_static_model, number_format = 5, bold_signif = 0.05)
 ```
 
 ```{r static, include=FALSE, results='asis'}
@@ -1018,10 +1010,10 @@ auc3 <- auc3@y.values[[1]]
 
 auc3 %>%
   knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is High Static' Model") %>%
-  kableExtra::kable_styling(latex_options = "scale_down")
+  kableExtra::kable_styling()
 ```
 
-```{r perf3, echo=FALSE}
+```{r perf3, echo=FALSE, fig.cap = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Static' Model"}
 plot(perf3, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Static' Model")
 ```
 
@@ -1051,13 +1043,13 @@ inmate_experiment_five <-
   mutate(is_low_motivation = if_else(motivation == "LOW", 1, 0))
 ```
 
-```{r test4, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a Low Motivation Score and Race or Age"}
+```{r test4, echo=FALSE, message=FALSE, warning=FALSE}
 offender_motivation_model <-
   glm(is_low_motivation ~ race_analysis + age,
       data = inmate_experiment_five,
       family = 'binomial')
 
-huxreg("test" = offender_motivation_model, number_format = 5, bold_signif = 0.05)
+huxreg("Logistic Regression Model Predicting a Low Motivation Score Using Race and Age" = offender_motivation_model, number_format = 5, bold_signif = 0.05)
 ```
 
 ```{r motivation, include=FALSE, results='asis'}
@@ -1101,10 +1093,10 @@ auc4 <- auc4@y.values[[1]]
 
 auc4 %>%
   knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is Low Motivation' Model") %>%
-  kableExtra::kable_styling(latex_options = "scale_down")
+  kableExtra::kable_styling()
 ```
 
-```{r perf4, echo=FALSE}
+```{r perf4, echo=FALSE, fig.cap = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is Low Motivation' Model"}
 plot(perf4, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is Low Motivation' Model")
 ```
 
@@ -1134,13 +1126,13 @@ inmate_experiment_two <-
   mutate(is_high_reintegration_potential = if_else(reintegration_potential == "HIGH", 1, 0))
 ```
 
-```{r test5, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a High Reintegration Potential and Race, Age or Aggregate Sentence Length"}
+```{r test5, echo=FALSE, message=FALSE, warning=FALSE}
 reintegration_potential_model <-
   glm(is_high_reintegration_potential ~ race_analysis + age + aggregate_sentence_length,
       data = inmate_experiment_two,
       family = 'binomial')
 
-huxreg("test" = reintegration_potential_model, number_format = 5, bold_signif = 0.05)
+huxreg("Logistic Regression Model Predicting a High Reintegration Potential Using Race, Age and Aggregate Sentence Length" = reintegration_potential_model, number_format = 5, bold_signif = 0.05)
 ```
 
 ```{r reintegration, include=FALSE, results='asis'}
@@ -1183,10 +1175,10 @@ auc5 <- auc5@y.values[[1]]
 
 auc5 %>%
   knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is High Reintegration Potential") %>%
-  kableExtra::kable_styling(latex_options = "scale_down")
+  kableExtra::kable_styling()
 ```
 
-```{r perf5, echo=FALSE}
+```{r perf5, echo=FALSE, fig.cap = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Reintegration Potential' Model"}
 plot(perf5, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Reintegration Potential' Model")
 ```
 

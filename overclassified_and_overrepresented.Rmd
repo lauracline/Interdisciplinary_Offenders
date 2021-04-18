@@ -134,6 +134,8 @@ library(forcats)
 library(kableExtra)
 library(stargazer)
 library(huxtable)
+library(caret)
+library(ROCR)
 ```
 
 ```{r include=FALSE}
@@ -742,25 +744,31 @@ For this project, the models will need to have a 0.05 significance level to be c
 
 ## Control Variables 
 
-Control variables help researchers establish a correlational or causal relationship between variables by enhancing internal validity. 
+Control variables help researchers establish a co-relational or causal relationship between variables by enhancing internal validity. 
 
-The first control variable is age. I chose to use age as a control variable because Tom Cardoso's original study demonstrated that age does have an effect on reintegration potential scores because younger inmates are more likely to receive higher reintegration potential scores because they have a shorter criminal history (static risk score). Thus, I chose to control for age in all the logistic regression models so it will not influence the final model. 
+The first control variable is age. I chose age as a control variable because Tom Cardoso's original study demonstrated that age does have an effect on reintegration potential scores because younger inmates are more likely to receive higher reintegration potential scores because they have a shorter criminal history (static risk score). Thus, I chose to control for age in all the logistic regression models so it will not influence the final model. 
 
-The second control variable is aggregate sentence length. This control variable is only used in the reintegration potential score model because reintegration potential is the only score that is recalculated every year an inmate is in prison. In contrast, the other four scores are determined at the beginning of an inmate's sentence. Thus, I controlled for aggregate sentence length to determine if an inmate was only receiving a higher reintegration potential score because of the time they spent in prison. 
+The second control variable is aggregate sentence length. This control variable is only used in the reintegration potential score model because reintegration potential is the only score that is recalculated every year an inmate is in prison. In contrast, the other four scores are determined at the beginning of an inmate's sentence [@citeScore]. Thus, I controlled for aggregate sentence length to determine if an inmate was only receiving a higher reintegration potential score because of the time they spent in prison. 
 
 ## Logistic Regression Model Weaknesses
 
 Logistic regression models have multiple weaknesses that could influence my ability to test a causal relationship between race and risk assessment scores. 
 
-First, when I created the logistic regression models I may have omitted important variables that were not included in the original dataset. Although I used age and aggregate sentence length as control variables in my models, I did not include the inmate's crime which led to them being imprisoned. Omitting this variable may lead to the estimate of the regression coefficient for the variables in the model to be either too high or too low. For instance, Indigenous women may be more likely to commit first degree murder which leads to a these women receiving maximum security levels and low reintegration potential scores. Thus, race is not the cause of the relationship but the confounding variable "crime". Additionally, there may be confounding qualitative variables that cannot be captured in a dataset or placed into a statistical model such as an individual's personal history, family background, and psychology. 
+First, when I created the logistic regression models I may have omitted important variables that were not included in the original dataset. Although I used age and aggregate sentence length as control variables in my models, I did not include the inmate's crime which led to them being imprisoned. Omitting this variable may lead to the estimate of the regression coefficient for the variables in the model to be either too high or too low. For instance, Indigenous women may be more likely to commit first degree murder which leads to a these women receiving maximum security levels and low reintegration potential scores. Thus, race is not the cause of the relationship but the confounding variable "type of crime". Additionally, there may be confounding qualitative variables that cannot be captured in a dataset or placed into a statistical model such as an individual's personal history, family background, and psychology. 
 
 Second, logistic regression models could have multicollinearity. Multicollinearity is a situation when two or more independent variables are highly correlated with each other. Multicollinearity leads to unreliable and unstable estimates of the regression coefficients and result in the reduction of their significance. For instance, the true relationship may be between age and race, rather than race and risk assessment scores. 
-Third, logistic regression's results are limited by the sample size. The sample size has a profound effect on tests of statistical significance. The CSC dataset may not include enough examples to justifiably determine if there is a causal relationship between race and risk assessment scores. Thus, the results of my logistic regression may be due to a small sample size that has low external validity and internal validity. 
 
-Lastly, there may be intervening or mediating variables that are influencing my logistic regression models' results. For instance, the age variable may mediate the effect of the race variable on risk assessment scores. Thus, younger Indigenous inmates may receive worst risk assessment scores compared to White women while older Indigenous women have a similiar risk score distribution as White women.
+Third, logistic regression's results are limited by the sample size. The sample size has a profound effect on tests of statistical significance. The CSC dataset may not include enough examples to justifiably determine if there is a causal relationship between race and risk assessment scores. Thus, the results of my logistic regression may be due to a small sample size that has low external validity and low internal validity. 
 
-## Model Validation 
+Lastly, there may be intervening or mediating variables that are influencing my logistic regression models' results. For instance, the age variable may mediate the effect of the race variable on risk assessment scores. Thus, younger Indigenous inmates may receive worst risk assessment scores compared to White women while older Indigenous women have a similar risk score distribution as White women.
 
+## Model Validation
+
+The logistic regression models will be validated by splitting the dataset into training and testing sets, building the logistic regression model using the training set, using the testing set to make predictions, and then use an Above the Curve plot to determine the percentage of inmates where the model correctly predicted the risk assessment score. 
+
+The Area Under the Curve (AUC) measures the logistic regression model's classification performance. AUC uses the proportion of positive data points that are correctly predicted positive and the proportion of negative data points that are mistakenly predicted as positive. I will also generate a plot that shows the trade-off between the rate at which the model correctly predicted the variable and the rate the model incorrectly predicted the variable. The area under the curve represents the number of true positive predictions. The metric ranges between 0.50 to 1.00, and values above 0.80 indicate that the model has high validity and predicts the correct value 80% of the time. The higher the AUC,the better the performance of the model at distinguishing between the positive and negative classes. An AUC score of 50% means that the model does slightly better than flipping a coin (random chance) [@citeAUC].
+
+I will create the AUC plots and scores using the ROCR [@citeROCR] and caret [@citeCaret] packages.
 
 
 # Results 
@@ -793,7 +801,7 @@ inmate_experiment_one <-
   mutate(is_high_offender_security_level = if_else(offender_security_level == "MAXIMUM", 1, 0))
 ```
 
-```{r test1, echo=FALSE}
+```{r test1, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Receiving the Maximum Security Level and Race or Age"}
 offender_security_level_model <-
   glm(is_high_offender_security_level ~ race_analysis + age,
       data = inmate_experiment_one,
@@ -816,6 +824,40 @@ stargazer::stargazer(offender_security_level_model, header=TRUE, type = "latex",
 The security level model (Table \@ref(tab:test1)) arrived at statistically significant results for all three racial categories. 
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a maximum security level, the log odds that a White women and other racialized minority will receive a maximum security level decreases by 1.068 and 0.646 respectively. The p-value for Indigenous women in maximum security is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a maximum security level [@citeSander]. 
+
+```{r include=FALSE}
+# Create training and testing data data 
+split1 <- createDataPartition(inmate_experiment_one$is_high_offender_security_level, p=0.7, list=FALSE)
+
+training1 <- inmate_experiment_one[split1,]
+testing1 <- inmate_experiment_one[-split1,]
+```
+
+```{r include=FALSE}
+mod_fit_one <- glm(is_high_offender_security_level ~ race_analysis + age,
+      data = training1,
+      family = 'binomial')
+```
+
+
+The Area Under the Curve model (Table \@ref(tab:auc1)) (Figure \@ref(fig:perf1)) demonstrates that our model correctly predicted 72.31% of inmates as having a maximum security level or not using their race and age. Thus, the maximum security model has moderatly high validity. 
+
+```{r auc1, echo=FALSE}
+prob1 <- predict(mod_fit_one, newdata=testing1, type = "response")
+pred1 <- prediction(prob1, testing1$is_high_offender_security_level)
+perf1 <- performance(pred1, measure = "tpr", x.measure = "fpr")
+auc1 <- performance(pred1, measure = "auc")
+auc1 <- auc1@y.values[[1]]
+
+auc1 %>%
+  knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is Maximum Security Level' Model") %>%
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r perf1, echo=FALSE}
+plot(perf1, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is Maximum Security Level' Model")
+```
+
 
 ## Dynamic/Need Score Logistic Regression Model for Race 
 
@@ -843,7 +885,7 @@ inmate_experiment_three <-
   mutate(is_high_dynamic = if_else(dynamic_need == "HIGH", 1, 0))
 ```
 
-```{r test2, echo=FALSE}
+```{r test2, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a High Dynamic Risk Score and Race or Age"}
 offender_dynamic_model <-
   glm(is_high_dynamic ~ race_analysis + age,
       data = inmate_experiment_three,
@@ -866,6 +908,39 @@ stargazer::stargazer(offender_dynamic_model, header=TRUE, type = "latex",
 The dynamic risk model (Table \@ref(tab:test2)) arrived at statistically significant results for all three racial categories. 
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high dynamic score, the log odds that a White women and other racialized minority will receive a high dynamic score decreases by 0.493 and 1.189 respectively. The p-value for Indigenous women with a high dynamic risk is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high dynamic risk score [@citeSander].
+
+The Area Under the Curve model (Table \@ref(tab:auc2)) (Figure \@ref(fig:perf2)) demonstrates that our model correctly predicted 62.44% of inmates as having a high dynamic score or not using their race and age. Thus, the dynamic risk score model predictions are slightly better than chance and the model has moderate validity. 
+
+
+```{r include=FALSE}
+# Create training and testing data data 
+split2 <- createDataPartition(inmate_experiment_three$is_high_dynamic, p=0.7, list=FALSE)
+
+training2 <- inmate_experiment_three[split2,]
+testing2 <- inmate_experiment_three[-split2,]
+```
+
+```{r include=FALSE}
+mod_fit_two <- glm(is_high_dynamic ~ race_analysis + age,
+      data = training2,
+      family = 'binomial')
+```
+
+```{r auc2, echo=FALSE}
+prob2 <- predict(mod_fit_two, newdata=testing2, type = "response")
+pred2 <- prediction(prob2, testing2$is_high_dynamic)
+perf2 <- performance(pred2, measure = "tpr", x.measure = "fpr")
+auc2 <- performance(pred2, measure = "auc")
+auc2 <- auc2@y.values[[1]]
+
+auc2 %>%
+  knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is High Dynamic' Model") %>%
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r perf2, echo=FALSE}
+plot(perf2, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Dynamic' Model")
+```
 
 ## Static Risk Score Logistic Regression Model for Race 
 
@@ -893,7 +968,7 @@ inmate_experiment_four <-
   mutate(is_high_static = if_else(static_risk == "HIGH", 1, 0))
 ```
 
-```{r test3, echo=FALSE}
+```{r test3, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a High Static Risk Score and Race or Age"}
 offender_static_model <-
   glm(is_high_static ~ race_analysis + age,
       data = inmate_experiment_four,
@@ -916,6 +991,39 @@ stargazer::stargazer(offender_static_model, header=TRUE, type = "latex",
 The static risk model (Table \@ref(tab:test3)) arrived at statistically significant results for all three racial categories. 
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high static score, the log odds that a White women and other racialized minority will receive a high static score decreases by 0.965 and 1.187 respectively. The p-value for Indigenous women with a high dynamic risk is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high static risk score [@citeSander].
+
+The Area Under the Curve model (Table \@ref(tab:auc3)) (Figure \@ref(fig:perf3)) demonstrates that our model correctly predicted 64.03% of inmates as having a high static score or not using their race and age. Thus, the static risk score model predictions are slightly better than chance and the model has moderate validity. 
+
+
+```{r include=FALSE}
+# Create training and testing data data 
+split3 <- createDataPartition(inmate_experiment_four$is_high_static, p=0.7, list=FALSE)
+
+training3 <- inmate_experiment_four[split3,]
+testing3 <- inmate_experiment_four[-split3,]
+```
+
+```{r include=FALSE}
+mod_fit_three <- glm(is_high_static ~ race_analysis + age,
+      data = training3,
+      family = 'binomial')
+```
+
+```{r auc3, echo=FALSE}
+prob3 <- predict(mod_fit_three, newdata=testing3, type = "response")
+pred3 <- prediction(prob3, testing3$is_high_static)
+perf3 <- performance(pred3, measure = "tpr", x.measure = "fpr")
+auc3 <- performance(pred3, measure = "auc")
+auc3 <- auc3@y.values[[1]]
+
+auc3 %>%
+  knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is High Static' Model") %>%
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r perf3, echo=FALSE}
+plot(perf3, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Static' Model")
+```
 
 ## Motivation Score Logistic Regression Model for Race 
 
@@ -943,7 +1051,7 @@ inmate_experiment_five <-
   mutate(is_low_motivation = if_else(motivation == "LOW", 1, 0))
 ```
 
-```{r test4, echo=FALSE}
+```{r test4, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a Low Motivation Score and Race or Age"}
 offender_motivation_model <-
   glm(is_low_motivation ~ race_analysis + age,
       data = inmate_experiment_five,
@@ -966,6 +1074,39 @@ stargazer::stargazer(offender_motivation_model, header=TRUE, type = "latex",
 The motivation model (Table \@ref(tab:test4)) arrived at statistically significant results for all three racial categories. 
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a low motivation score, the log odds that a White women and other racialized minority will receive a low motivation score decreases by 0.792 and 0.794 respectively. The p-value for Indigenous women with a low motivation is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a low motivation score [@citeSander].
+
+The Area Under the Curve model (Table \@ref(tab:auc4)) (Figure \@ref(fig:perf4)) demonstrates that our model correctly predicted 61.52% of inmates as having a low motivation score or not using their race and age. Thus, the motivation score model predictions are slightly better than chance and the model has moderate validity. 
+
+
+```{r include=FALSE}
+# Create training and testing data data 
+split4 <- createDataPartition(inmate_experiment_five$is_low_motivation, p=0.7, list=FALSE)
+
+training4 <- inmate_experiment_five[split4,]
+testing4 <- inmate_experiment_five[-split4,]
+```
+
+```{r include=FALSE}
+mod_fit_four <- glm(is_low_motivation ~ race_analysis + age,
+      data = training4,
+      family = 'binomial')
+```
+
+```{r auc4, echo=FALSE}
+prob4 <- predict(mod_fit_four, newdata=testing4, type = "response")
+pred4 <- prediction(prob4, testing4$is_low_motivation)
+perf4 <- performance(pred4, measure = "tpr", x.measure = "fpr")
+auc4 <- performance(pred4, measure = "auc")
+auc4 <- auc4@y.values[[1]]
+
+auc4 %>%
+  knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is Low Motivation' Model") %>%
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r perf4, echo=FALSE}
+plot(perf4, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is Low Motivation' Model")
+```
 
 ## Reintegration Potential Score Logistic Regression Model for Race 
 
@@ -993,7 +1134,7 @@ inmate_experiment_two <-
   mutate(is_high_reintegration_potential = if_else(reintegration_potential == "HIGH", 1, 0))
 ```
 
-```{r test5, echo=FALSE}
+```{r test5, echo=FALSE, fig.cap = "Logistic Regression Model Showing the Relationship Between Having a High Reintegration Potential and Race, Age or Aggregate Sentence Length"}
 reintegration_potential_model <-
   glm(is_high_reintegration_potential ~ race_analysis + age + aggregate_sentence_length,
       data = inmate_experiment_two,
@@ -1016,6 +1157,38 @@ stargazer::stargazer(reintegration_potential_model, header=TRUE, type = "latex",
 The reintegration potential model (Table \@ref(tab:test5)) arrived at statistically significant results for all three racial categories. 
 
 The logistic regression results demonstrate that for every one unit increase in the number of Indigenous women who receive a high reintegration potential score, the log odds that a White women and other racialized minority will receive a high reintegration potential score increases by 0.579 and 1.295 respectively. The p-value for Indigenous women with a high reintegration potential score is less than 0.01, well below my alpha threshold of 0.05. Therefore, the p-value flags the data as being unusual if all the assumptions used to compute it (including the test hypothesis) are correct. Thus, we can reject the null hypothesis that there is no difference between a female inmate's race and their likelihood of being assigned a high reintegration potential [@citeSander]. 
+
+The Area Under the Curve model (Table \@ref(tab:auc5)) (Figure \@ref(fig:perf5)) demonstrates that our model correctly predicted 67.20% of inmates as having a high reintegration potential score or not using their race, age and aggregate sentence length. Thus, the reintegration potential model's predictions are slightly better than chance and the model has moderate validity. 
+
+```{r include=FALSE}
+# Create training and testing data data 
+split5 <- createDataPartition(inmate_experiment_two$is_high_reintegration_potential, p=0.7, list=FALSE)
+
+training5 <- inmate_experiment_two[split5,]
+testing5 <- inmate_experiment_two[-split5,]
+```
+
+```{r include=FALSE}
+mod_fit_five <- glm(is_high_reintegration_potential ~ race_analysis + age + aggregate_sentence_length,
+      data = training5,
+      family = 'binomial')
+```
+
+```{r auc5, echo=FALSE}
+prob5 <- predict(mod_fit_five, newdata=testing5, type = "response")
+pred5 <- prediction(prob5, testing5$is_high_reintegration_potential)
+perf5 <- performance(pred5, measure = "tpr", x.measure = "fpr")
+auc5 <- performance(pred5, measure = "auc")
+auc5 <- auc5@y.values[[1]]
+
+auc5 %>%
+  knitr::kable(caption = "Area Under the Curve (AUC) for a Logistic Regression Model for 'Is High Reintegration Potential") %>%
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r perf5, echo=FALSE}
+plot(perf5, main = "Area Under the Curve (AUC) for a Logistic Regression Model \nfor 'Is High Reintegration Potential' Model")
+```
 
 # Discussion and Future Research 
 
@@ -1056,3 +1229,5 @@ The final subject that requires further research would be the extent to which sy
 However, as this research project has attempted to illustrate, the crisis of Indigenous over-incarceration goes much deeper than mere statistics, however shocking. While it is easy to use graphs and percentages to demonstrate the severity of Indigenous overrepresentation within Canada's federal prisons, we really ought to talk about people rather than figures. When an Indigenous women, or any person for that matter, goes to prison, it is not only their life trajectory that is negatively affected. The trickle down affects of Indigenous over-incarceration will lead to future generations being caught in this tenacious web of trauma, poverty, and crime. If we do not take time to stop, listen, learn and act, there is little hope that this grave injustice will simply continue unabated. Instead of locking people up on reserves, Canada will simply lock them up in prison instead. 
 
 # Bibliography 
+
+
